@@ -1,0 +1,27 @@
+command:
+  failure-handler:
+    permission-or: '或'
+    sender-player: '玩家'
+    sender-console: '控制台'
+    missing-permission: |
+      '&c您无法执行命令: &e${command-line}
+      &c因为缺少任意权限: &e[${permissions}].
+    sender-mismatch: '&c您输入的命令 &e${command-line} 仅允许 &e${sender} &c来执行.'
+    param-parse-error: '&c您输入的命令 &e${command-line} &c中参数 &e${param} &c存在错误, 原因: &e${error-message}&c.'
+    format-error: |
+      &c您输入的命令 &e${command-line} &c不存在, 可用的命令如下: 
+      ${available-command-trees}
+  helper:
+    help: |
+      &e命令帮助信息如下: 
+      ${available-command-trees}
+  param-parse:
+    invalid-double: '无效的双精度小数: ${param}.'
+    invalid-float: '无效的小数: ${param}.'
+    invalid-enum: '无效的枚举: ${param}.'
+    invalid-integer: '无效的整数: ${param}.'
+    player-offline: '玩家不在线: ${param}.'
+  param-validation:
+    min: '最小值: ${min}.'
+    max: '最大值: ${max}.'
+    between: '数值仅允许在区间 [${min}, ${max}] 内.'

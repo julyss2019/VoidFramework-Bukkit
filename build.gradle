@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    apply plugin: 'java'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+        }
+    }
+}
+
+tasks.register('buildCoreAndPublish') {
+    dependsOn ':core:clean'
+    dependsOn ':core:shadowJar'
+    dependsOn ':core:publishToMavenLocal'
+}
+
+tasks.register('buildExample') {
+    dependsOn ':example:clean'
+    dependsOn ':example:build'
+}

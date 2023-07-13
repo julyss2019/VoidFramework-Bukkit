@@ -1,0 +1,7 @@
+name: VoidFramework-Bukkit
+author: July_ss
+version: ${version}
+main: com.github.julyss2019.bukkit.voidframework.internal.VoidFrameworkPlugin
+api-version: 1.13
+softdepend:
+  - Vault

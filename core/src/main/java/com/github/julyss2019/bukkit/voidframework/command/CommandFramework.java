@@ -1,0 +1,217 @@
+package com.github.julyss2019.bukkit.voidframework.command;
+
+import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandBody;
+import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandMapping;
+import com.github.julyss2019.bukkit.voidframework.command.failure.CommandFailureHandler;
+import com.github.julyss2019.bukkit.voidframework.command.failure.CommandFailureHandlerImpl;
+import com.github.julyss2019.bukkit.voidframework.command.helper.CommandHelper;
+import com.github.julyss2019.bukkit.voidframework.command.helper.CommandHelperImpl;
+import com.github.julyss2019.bukkit.voidframework.command.internal.CommandGroupHolder;
+import com.github.julyss2019.bukkit.voidframework.command.tree.CommandTree;
+import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandBodyElement;
+import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandMappingElement;
+import com.github.julyss2019.bukkit.voidframework.command.param.parser.*;
+import com.github.julyss2019.bukkit.voidframework.command.param.tab.completer.EnumParamTabCompleter;
+import com.github.julyss2019.bukkit.voidframework.command.param.tab.completer.IntegerParamTabCompleter;
+import com.github.julyss2019.bukkit.voidframework.command.param.tab.completer.ParamTabCompleter;
+import com.github.julyss2019.bukkit.voidframework.command.param.tab.completer.PlayerParamTabCompleter;
+import com.github.julyss2019.bukkit.voidframework.internal.VoidFrameworkPlugin;
+import com.github.julyss2019.bukkit.voidframework.logging.logger.Logger;
+import lombok.NonNull;
+import org.bukkit.plugin.Plugin;
+
+import java.lang.reflect.Method;
+import java.util.*;
+
+public class CommandFramework {
+    private final VoidFrameworkPlugin voidFrameworkPlugin;
+    private final Plugin plugin;
+    private final Logger logger;
+    private final CommandManager commandManager;
+    private final CommandMapping pluginScopeCommandMapping; // 插件层面的命令映射注解
+    private final Set<CommandGroupHolder> commandGroupHolders = new HashSet<>();
+    private final List<ParamParser> paramParsers = new ArrayList<>();
+    private final List<ParamTabCompleter> paramTabCompleters = new ArrayList<>();
+    private CommandFailureHandler commandFailureHandler;
+    private CommandHelper commandHelper;
+
+    public CommandFramework(@NonNull VoidFrameworkPlugin voidFrameworkPlugin, @NonNull Plugin plugin) {
+        this.voidFrameworkPlugin = voidFrameworkPlugin;
+        this.plugin = plugin;
+        this.commandManager = voidFrameworkPlugin.getCommandManager();
+        this.logger = voidFrameworkPlugin.getPluginLogger();
+        this.pluginScopeCommandMapping = plugin.getClass().getAnnotation(CommandMapping.class);
+
+        addBuildInParamParsers();
+        addBuildInParamTabCompleters();
+
+        setCommandExecutionFailureHandler(new CommandFailureHandlerImpl(voidFrameworkPlugin.getLocaleResource()));
+        setCommandHelper(new CommandHelperImpl(voidFrameworkPlugin.getLocaleResource()));
+    }
+
+    public void setCommandExecutionFailureHandler(@NonNull CommandFailureHandler commandFailureHandler) {
+        this.commandFailureHandler = commandFailureHandler;
+    }
+
+    public void setCommandHelper(@NonNull CommandHelper commandHelper) {
+        this.commandHelper = commandHelper;
+    }
+
+    public ParamTabCompleter getParamTabCompleter(@NonNull Class<?> type) {
+        for (ParamTabCompleter paramTabCompleter : paramTabCompleters) {
+            for (Class<?> supportedParamType : paramTabCompleter.getSupportedParamTypes()) {
+                if (supportedParamType.isAssignableFrom(type)) {
+                    return paramTabCompleter;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public ParamParser getParamParser(@NonNull Class<?> type) {
+        for (ParamParser paramParser : paramParsers) {
+            for (Class<?> supportedParamType : paramParser.getSupportedParamTypes()) {
+                if (supportedParamType.isAssignableFrom(type)) {
+                    return paramParser;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void addParamParser(@NonNull ParamParser paramParser) {
+        paramParsers.add(paramParser);
+    }
+
+    private void addBuildInParamParsers() {
+        addParamParser(new EnumParamParser());
+        addParamParser(new IntegerParamParser());
+        addParamParser(new DoubleParamParser());
+        addParamParser(new PlayerParamParser());
+        addParamParser(new StringParamParser());
+        addParamParser(new BooleanParamParser());
+    }
+
+    public void addParamTabCompleter(@NonNull ParamTabCompleter paramTabCompleter) {
+        paramTabCompleters.add(paramTabCompleter);
+    }
+
+    public void addBuildInParamTabCompleters() {
+        addParamTabCompleter(new EnumParamTabCompleter());
+        addParamTabCompleter(new IntegerParamTabCompleter());
+        addParamTabCompleter(new PlayerParamTabCompleter());
+    }
+
+    /**
+     * 获取所有命令组
+     */
+    public Set<CommandGroupHolder> getCommandGroupContexts() {
+        return Collections.unmodifiableSet(commandGroupHolders);
+    }
+
+    private void unregisterCommandGroup0(CommandGroupHolder commandGroupHolder) {
+        commandManager.getRootCommandTree().getChildren().removeIf(child -> child.getElement().getHolder().equals(commandGroupHolder));
+        commandManager.adjustBukkitCommandIds();
+    }
+
+    /**
+     * 注销命令组
+     */
+    public void unregisterCommandGroup(@NonNull CommandGroupHolder commandGroupHolder) {
+        unregisterCommandGroup0(commandGroupHolder);
+        commandGroupHolders.remove(commandGroupHolder);
+        commandManager.adjustBukkitCommandIds();
+    }
+
+    /**
+     * 注销所有命令组
+     */
+    public void unregisterCommandGroups() {
+        for (CommandGroupHolder commandGroup : commandGroupHolders) {
+            unregisterCommandGroup0(commandGroup);
+        }
+
+        commandGroupHolders.clear();
+        commandManager.adjustBukkitCommandIds();
+    }
+
+    /**
+     * 处理命令命令映射元素
+     * @param currentTree 当前命令树
+     * @param commandGroupHolder 命令持有者
+     * @param commandMapping 命令映射注解
+     * @return 解析过的命令映射元素
+     */
+    private CommandTree solveCommandMappingElement(CommandTree currentTree, CommandGroupHolder commandGroupHolder, CommandMapping commandMapping) {
+        for (String id : commandMapping.value().split("/")) {
+            CommandMappingElement mappingElement = new CommandMappingElement(commandGroupHolder, id, commandMapping);
+
+            currentTree = currentTree.getOrAddChild(new CommandTree(mappingElement));
+        }
+
+        return currentTree;
+    }
+
+    /**
+     * 注册命令组
+     *
+     * @param commandGroup 命令组
+     */
+    public CommandGroupHolder registerCommandGroup(@NonNull CommandGroup commandGroup) {
+        // 先验证合法性
+        CommandGroupVerifier.verify(commandGroup);
+
+        CommandGroupHolder commandGroupHolder = new CommandGroupHolder(plugin, this, commandGroup);
+        CommandTree currentTree = commandManager.getRootCommandTree();
+
+        // 处理全局层面的映射
+        if (pluginScopeCommandMapping != null) {
+            currentTree = solveCommandMappingElement(currentTree, commandGroupHolder, pluginScopeCommandMapping);
+        }
+
+        Class<?> commandGroupClass = commandGroup.getClass();
+        CommandMapping commandMappingAnnotation = commandGroupClass.getDeclaredAnnotation(CommandMapping.class);
+
+        // 处理 CommandGroup 层面的映射
+        if (commandMappingAnnotation != null) {
+            currentTree = solveCommandMappingElement(currentTree, commandGroupHolder, commandMappingAnnotation);
+        }
+
+        // 处理命令体
+        for (Method method : commandGroupClass.getDeclaredMethods()) {
+            CommandBody commandBodyAnnotation = method.getDeclaredAnnotation(CommandBody.class);
+
+            if (commandBodyAnnotation != null) {
+                CommandBodyElement element = new CommandBodyElement(commandGroupHolder, method, commandBodyAnnotation);
+
+                currentTree.addChild(new CommandTree(element));
+            }
+        }
+
+        commandManager.adjustBukkitCommandIds();
+        logger.debug("command registered: " + commandGroup);
+        logger.debug("current command tree: ");
+        Arrays.stream(commandManager.getRootCommandTree().getTreeAsString().split("\n")).forEach(logger::debug);
+        return commandGroupHolder;
+    }
+
+    /**
+     * 获取命令执行失败处理器
+     */
+    public CommandFailureHandler getCommandExecutionFailureHandler() {
+        return commandFailureHandler;
+    }
+
+    /**
+     * 获取命令帮助器
+     */
+    public CommandHelper getCommandHelper() {
+        return commandHelper;
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
+    }
+}
