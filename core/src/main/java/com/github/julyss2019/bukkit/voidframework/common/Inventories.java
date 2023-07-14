@@ -149,34 +149,49 @@ public class Inventories {
         Validator.checkNotContainsNullElement(slots, "slots cannot contains null");
 
         int maxStack = item.getMaxStackSize();
-        int counter = 0;
+        int finishedAmount = 0; // 已经放置的
 
+        // 能叠的先叠
         for (int slot : slots) {
             ItemStack invItem = inventory.getItem(slot);
 
-            if (counter > amount) {
-                return counter;
-            }
+            if (invItem != null && invItem.isSimilar(item)) {
+                int oldAmount = invItem.getAmount(); // 旧物品数量
+                int leftAmount = maxStack - oldAmount; // 旧物品剩余可用的数量
+                int addAmount = Math.min(amount - finishedAmount, leftAmount); // 新物品增加的数量
+                int newAmount = leftAmount + addAmount; // 新物品数量
 
-            if (!Items.isValid(invItem)) {
                 ItemStack newItem = item.clone();
-
-                newItem.setAmount(maxStack);
-                inventory.setItem(slot, newItem);
-
-                counter += maxStack;
-            } else if (invItem.isSimilar(item)) {
-                ItemStack newItem = item.clone();
-                int newAmount = maxStack - item.getAmount();
 
                 newItem.setAmount(newAmount);
                 inventory.setItem(slot, newItem);
+                finishedAmount += addAmount;
+            }
 
-                counter += newAmount;
+            if (finishedAmount == amount) {
+                return amount;
             }
         }
 
-        return counter;
+        // 利用空格子
+        for (int slot : slots) {
+            ItemStack invItem = inventory.getItem(slot);
+
+            if (!Items.isValid(invItem)) {
+                ItemStack newItem = item.clone();
+                int newAmount = Math.min(amount - finishedAmount, maxStack);
+
+                newItem.setAmount(newAmount);
+                inventory.setItem(slot, newItem);
+                finishedAmount += newAmount;
+            }
+
+            if (finishedAmount == amount) {
+                return amount;
+            }
+        }
+
+        return finishedAmount;
     }
 
     /**
