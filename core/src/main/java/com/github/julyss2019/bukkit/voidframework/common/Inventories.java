@@ -268,8 +268,8 @@ public class Inventories {
         for (Integer slot : slots) {
             ItemStack item = inventory.getItem(slot);
 
-            if (item == null) {
-                item = AIR_ITEM;
+            if (!Items.isValid(item)) {
+                continue;
             }
 
             if (predicate.test(item)) {
