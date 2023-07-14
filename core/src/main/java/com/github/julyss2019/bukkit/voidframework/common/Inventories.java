@@ -159,17 +159,15 @@ public class Inventories {
         for (int slot : slots) {
             ItemStack invItem = inventory.getItem(slot);
 
-            if (invItem != null && invItem.isSimilar(item)) {
+            if (Items.isValid(invItem) && invItem.isSimilar(item)) {
                 int oldAmount = invItem.getAmount(); // 旧物品数量
-                int leftAmount = maxStack - oldAmount; // 旧物品剩余可用的数量
-                int addAmount = Math.min(amount - finishedAmount, leftAmount); // 新物品增加的数量
-                int newAmount = leftAmount + addAmount; // 新物品数量
+                int newAmount = Math.min(oldAmount + (amount - finishedAmount), maxStack); // 新物品数量
 
                 ItemStack newItem = item.clone();
 
                 newItem.setAmount(newAmount);
                 inventory.setItem(slot, newItem);
-                finishedAmount += addAmount;
+                finishedAmount += (newAmount - oldAmount);
             }
 
             if (finishedAmount == amount) {
