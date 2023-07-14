@@ -14,6 +14,6 @@ public class ItemSimilarPredicate implements Predicate<ItemStack> {
 
     @Override
     public boolean test(ItemStack item) {
-        return itemStack.isSimilar(itemStack);
+        return this.itemStack.isSimilar(itemStack);
     }
 }
