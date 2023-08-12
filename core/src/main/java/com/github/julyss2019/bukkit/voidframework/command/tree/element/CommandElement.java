@@ -1,6 +1,6 @@
 package com.github.julyss2019.bukkit.voidframework.command.tree.element;
 
-import com.github.julyss2019.bukkit.voidframework.command.internal.CommandGroupHolder;
+import com.github.julyss2019.bukkit.voidframework.command.CommandGroupContext;
 
 /**
  * 命令元素
@@ -20,5 +20,5 @@ public interface CommandElement {
     /**
      * 持有者
      */
-    CommandGroupHolder getHolder();
+    CommandGroupContext getHolder();
 }

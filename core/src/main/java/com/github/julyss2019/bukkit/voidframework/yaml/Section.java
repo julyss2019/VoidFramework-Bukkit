@@ -227,7 +227,7 @@ public class Section {
      * @param path 路径
      */
     public List<String> getStringList(@NonNull String path) {
-        return getStringList(Paths.of(path), DefaultValue.of(Collections.emptyList()));
+        return getStringList(Paths.of(path), null);
     }
 
     /**
@@ -334,13 +334,7 @@ public class Section {
      * @param def   默认值
      */
     public double getDouble(@NonNull Paths paths, @Nullable DefaultValue<Double> def) {
-        return parse(paths, path -> {
-            if (bukkitSection.isInt(path)) {
-                return (double) bukkitSection.getInt(path);
-            }
-
-            return bukkitSection.getDouble(path);
-        }, def);
+        return parse(paths, bukkitSection::getDouble, def);
     }
 
     /**

@@ -1,23 +1,23 @@
 package com.github.julyss2019.bukkit.voidframework.command.tree.element;
 
-import com.github.julyss2019.bukkit.voidframework.command.internal.CommandGroupHolder;
+import com.github.julyss2019.bukkit.voidframework.command.CommandGroupContext;
 import lombok.NonNull;
 
 public abstract class BaseCommandElement implements CommandElement {
-    private CommandGroupHolder holder;
+    private CommandGroupContext holder;
     private String commandId;
     private String permission;
 
     public BaseCommandElement() {
     }
 
-    public BaseCommandElement(@NonNull CommandGroupHolder holder, @NonNull String commandId, @NonNull String permission) {
+    public BaseCommandElement(@NonNull CommandGroupContext holder, @NonNull String commandId, @NonNull String permission) {
         this.holder = holder;
         this.commandId = commandId;
         this.permission = permission;
     }
 
-    public void setHolder(@NonNull CommandGroupHolder holder) {
+    public void setHolder(@NonNull CommandGroupContext holder) {
         this.holder = holder;
     }
 
@@ -40,7 +40,7 @@ public abstract class BaseCommandElement implements CommandElement {
     }
 
     @Override
-    public CommandGroupHolder getHolder() {
+    public CommandGroupContext getHolder() {
         return holder;
     }
 }

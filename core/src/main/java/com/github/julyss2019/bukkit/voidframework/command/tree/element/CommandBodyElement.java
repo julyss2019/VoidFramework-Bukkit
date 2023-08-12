@@ -3,7 +3,7 @@ package com.github.julyss2019.bukkit.voidframework.command.tree.element;
 import com.github.julyss2019.bukkit.voidframework.command.SenderType;
 import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandBody;
 import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.CommandGroupHolder;
+import com.github.julyss2019.bukkit.voidframework.command.CommandGroupContext;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.ContextMethodParam;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayUserInputMethodParam;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.FixedUserInputMethodParam;
@@ -32,8 +32,8 @@ public class CommandBodyElement extends BaseCommandElement {
     private int minInputParamCount;
     private int maxInputParamCount;
 
-    public CommandBodyElement(@NonNull CommandGroupHolder commandGroupHolder, @NonNull Method method, @NonNull CommandBody commandBodyAnnotation) {
-        setHolder(commandGroupHolder);
+    public CommandBodyElement(@NonNull CommandGroupContext commandGroupContext, @NonNull Method method, @NonNull CommandBody commandBodyAnnotation) {
+        setHolder(commandGroupContext);
 
         String tmp = commandBodyAnnotation.value();
 
@@ -49,7 +49,7 @@ public class CommandBodyElement extends BaseCommandElement {
         this.method = method;
         this.description = commandBodyAnnotation.description();
         this.senderTypes = commandBodyAnnotation.senders();
-        this.commandGroupInst = commandGroupHolder.getCommandGroup();
+        this.commandGroupInst = commandGroupContext.getCommandGroup();
 
         // 解析参数
         for (Parameter parameter : method.getParameters()) {

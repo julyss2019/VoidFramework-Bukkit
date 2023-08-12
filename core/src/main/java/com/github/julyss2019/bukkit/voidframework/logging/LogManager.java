@@ -14,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class LogManager {
@@ -29,6 +30,19 @@ public class LogManager {
      */
     public void unregisterAllLoggers() {
         loggers.forEach(this::unregisterLogger0);
+    }
+
+    public void unregisterLoggers(@NonNull Plugin plugin) {
+        Iterator<Logger> iterator = loggers.iterator();
+
+        while (iterator.hasNext()) {
+            Logger next = iterator.next();
+
+            if (next.getHolder().equals(plugin)) {
+                next.getAppenders().forEach(Appender::close);
+                iterator.remove();
+            }
+        }
     }
 
     /**

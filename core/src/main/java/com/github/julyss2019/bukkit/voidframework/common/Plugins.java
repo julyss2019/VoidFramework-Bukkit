@@ -7,13 +7,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class Plugins {
+
     /**
      * 保存文件资源
      *
@@ -36,9 +39,9 @@ public class Plugins {
             throw new RuntimeException("mkdirs failed: " + destFolder.getAbsolutePath());
         }
 
-        String pluginJarFilePath = plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-
-        try (JarFile jarFile = new JarFile(pluginJarFilePath)) {
+        // 这样才能转换为正确的路径, plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() 无法正确解析非英文的路径
+        try (JarFile jarFile = new JarFile(new File(plugin.getClass().getProtectionDomain().getCodeSource().getLocation()
+                .toURI()))) {
             Enumeration<JarEntry> entries = jarFile.entries();
 
             while (entries.hasMoreElements()) {
@@ -78,7 +81,7 @@ public class Plugins {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }

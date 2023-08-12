@@ -2,14 +2,13 @@ package com.github.julyss2019.bukkit.voidframework.internal;
 
 import com.github.julyss2019.bukkit.voidframework.VoidFramework;
 import com.github.julyss2019.bukkit.voidframework.command.CommandFramework;
-import com.github.julyss2019.bukkit.voidframework.command.CommandGroup;
 import com.github.julyss2019.bukkit.voidframework.command.CommandManager;
 import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandMapping;
 import com.github.julyss2019.bukkit.voidframework.common.Plugins;
 import com.github.julyss2019.bukkit.voidframework.internal.command.DemoACommandGroup;
 import com.github.julyss2019.bukkit.voidframework.internal.command.DemoCommandGroup;
 import com.github.julyss2019.bukkit.voidframework.internal.command.PluginCommandGroup;
-import com.github.julyss2019.bukkit.voidframework.internal.listeners.CommandFrameworkListener;
+import com.github.julyss2019.bukkit.voidframework.internal.listener.PluginUnregisterListener;
 import com.github.julyss2019.bukkit.voidframework.internal.task.ConsoleAppenderFlushTask;
 import com.github.julyss2019.bukkit.voidframework.internal.task.LoggerDailyFileAppenderAutoFlushTask;
 import com.github.julyss2019.bukkit.voidframework.locale.LocaleParser;
@@ -54,10 +53,16 @@ public class VoidFrameworkPlugin extends JavaPlugin {
         commandFramework.registerCommandGroup(new PluginCommandGroup(this));
         commandFramework.registerCommandGroup(new DemoCommandGroup());
         commandFramework.registerCommandGroup(new DemoACommandGroup());
-        Bukkit.getPluginManager().registerEvents(new CommandFrameworkListener(this), this);
-        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        Bukkit.getPluginManager().registerEvents(new PluginUnregisterListener(this), this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         runTasks();
-        setupVaultEconomy();
+
+        try {
+            setupVaultEconomy();
+        } catch (Throwable ignored) {
+
+        }
+
         pluginLogger.info("插件已加载.");
     }
 

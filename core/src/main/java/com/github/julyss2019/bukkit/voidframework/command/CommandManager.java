@@ -3,7 +3,6 @@ package com.github.julyss2019.bukkit.voidframework.command;
 import com.github.julyss2019.bukkit.voidframework.annotation.Nullable;
 import com.github.julyss2019.bukkit.voidframework.command.failure.CommandFailureHandler;
 import com.github.julyss2019.bukkit.voidframework.command.helper.CommandHelper;
-import com.github.julyss2019.bukkit.voidframework.command.internal.CommandGroupHolder;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.ContextMethodParam;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderContextMethodParam;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayUserInputMethodParam;
@@ -198,7 +197,7 @@ public class CommandManager {
         CommandTree closestTree = getClosestCommandTree(commandLineArray);
         CommandElement element = closestTree.getElement();
 
-        CommandGroupHolder holder = element.getHolder();
+        CommandGroupContext holder = element.getHolder();
         CommandFramework commandFramework = holder.getCommandFramework();
         CommandHelper helper = commandFramework.getCommandHelper();
         CommandFailureHandler failureHandler = commandFramework.getCommandExecutionFailureHandler();
@@ -374,7 +373,7 @@ public class CommandManager {
         String lastParam = commandLineArray[commandLineArrayLength - 1]; // 末尾的参数
         CommandTree currentTree = getClosestCommandTree(commandLineArray);
         CommandElement element = currentTree.getElement();
-        CommandGroupHolder holder = element.getHolder();
+        CommandGroupContext holder = element.getHolder();
         List<String> availableCompletions = new ArrayList<>(); // 可用的补全内容
 
         // 补全 CommandParam

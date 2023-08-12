@@ -3,6 +3,8 @@ package com.github.julyss2019.bukkit.voidframework.text.internal;
 import com.github.julyss2019.bukkit.voidframework.text.PlaceholderContainer;
 import lombok.NonNull;
 
+import java.util.Optional;
+
 /**
  * 占位符转换器
  */
@@ -70,7 +72,7 @@ public class PlaceholderConverter {
 
                     String key = text.substring(l + 1, r);
 
-                    processedText.append(placeholderContainer.getValue(key));
+                    processedText.append(Optional.ofNullable(placeholderContainer.getValue(key)).orElse(String.format("${%s}", key)));
                     state = State.LITERAL;
                     i = r;
                     break;

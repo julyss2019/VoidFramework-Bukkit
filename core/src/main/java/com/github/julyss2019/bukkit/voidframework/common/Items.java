@@ -33,7 +33,7 @@ public class Items {
     }
 
     public static @NonNull List<String> getLores(ItemStack itemStack) {
-        if (itemStack.getType() == Material.AIR) {
+        if (!isValid(itemStack)) {
             return new ArrayList<>();
         }
 
@@ -52,8 +52,8 @@ public class Items {
         return lores;
     }
 
-    public static String getDisplayName(ItemStack itemStack) {
-        if (itemStack.getType() == Material.AIR) {
+    public static String getDisplayName( ItemStack itemStack) {
+        if (!isValid(itemStack)) {
             return null;
         }
 

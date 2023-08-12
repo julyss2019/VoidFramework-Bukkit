@@ -6,7 +6,6 @@ import com.github.julyss2019.bukkit.voidframework.command.failure.CommandFailure
 import com.github.julyss2019.bukkit.voidframework.command.failure.CommandFailureHandlerImpl;
 import com.github.julyss2019.bukkit.voidframework.command.helper.CommandHelper;
 import com.github.julyss2019.bukkit.voidframework.command.helper.CommandHelperImpl;
-import com.github.julyss2019.bukkit.voidframework.command.internal.CommandGroupHolder;
 import com.github.julyss2019.bukkit.voidframework.command.tree.CommandTree;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandBodyElement;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandMappingElement;
@@ -29,7 +28,7 @@ public class CommandFramework {
     private final Logger logger;
     private final CommandManager commandManager;
     private final CommandMapping pluginScopeCommandMapping; // 插件层面的命令映射注解
-    private final Set<CommandGroupHolder> commandGroupHolders = new HashSet<>();
+    private final Set<CommandGroupContext> commandGroupContexts = new HashSet<>();
     private final List<ParamParser> paramParsers = new ArrayList<>();
     private final List<ParamTabCompleter> paramTabCompleters = new ArrayList<>();
     private CommandFailureHandler commandFailureHandler;
@@ -107,21 +106,22 @@ public class CommandFramework {
     /**
      * 获取所有命令组
      */
-    public Set<CommandGroupHolder> getCommandGroupContexts() {
-        return Collections.unmodifiableSet(commandGroupHolders);
+    public Set<CommandGroupContext> getCommandGroupContexts() {
+        return Collections.unmodifiableSet(commandGroupContexts);
     }
 
-    private void unregisterCommandGroup0(CommandGroupHolder commandGroupHolder) {
-        commandManager.getRootCommandTree().getChildren().removeIf(child -> child.getElement().getHolder().equals(commandGroupHolder));
+    private void unregisterCommandGroup0(CommandGroupContext commandGroupContext) {
+        logger.info("CommandGroup unregistered: " + commandGroupContext.getCommandGroup());
+        commandManager.getRootCommandTree().getChildren().removeIf(child -> child.getElement().getHolder().equals(commandGroupContext));
         commandManager.adjustBukkitCommandIds();
     }
 
     /**
      * 注销命令组
      */
-    public void unregisterCommandGroup(@NonNull CommandGroupHolder commandGroupHolder) {
-        unregisterCommandGroup0(commandGroupHolder);
-        commandGroupHolders.remove(commandGroupHolder);
+    public void unregisterCommandGroup(@NonNull CommandGroupContext commandGroupContext) {
+        unregisterCommandGroup0(commandGroupContext);
+        commandGroupContexts.remove(commandGroupContext);
         commandManager.adjustBukkitCommandIds();
     }
 
@@ -129,24 +129,24 @@ public class CommandFramework {
      * 注销所有命令组
      */
     public void unregisterCommandGroups() {
-        for (CommandGroupHolder commandGroup : commandGroupHolders) {
+        for (CommandGroupContext commandGroup : commandGroupContexts) {
             unregisterCommandGroup0(commandGroup);
         }
 
-        commandGroupHolders.clear();
+        commandGroupContexts.clear();
         commandManager.adjustBukkitCommandIds();
     }
 
     /**
      * 处理命令命令映射元素
      * @param currentTree 当前命令树
-     * @param commandGroupHolder 命令持有者
+     * @param commandGroupContext 命令持有者
      * @param commandMapping 命令映射注解
      * @return 解析过的命令映射元素
      */
-    private CommandTree solveCommandMappingElement(CommandTree currentTree, CommandGroupHolder commandGroupHolder, CommandMapping commandMapping) {
+    private CommandTree solveCommandMappingElement(CommandTree currentTree, CommandGroupContext commandGroupContext, CommandMapping commandMapping) {
         for (String id : commandMapping.value().split("/")) {
-            CommandMappingElement mappingElement = new CommandMappingElement(commandGroupHolder, id, commandMapping);
+            CommandMappingElement mappingElement = new CommandMappingElement(commandGroupContext, id, commandMapping);
 
             currentTree = currentTree.getOrAddChild(new CommandTree(mappingElement));
         }
@@ -159,16 +159,16 @@ public class CommandFramework {
      *
      * @param commandGroup 命令组
      */
-    public CommandGroupHolder registerCommandGroup(@NonNull CommandGroup commandGroup) {
+    public CommandGroupContext registerCommandGroup(@NonNull CommandGroup commandGroup) {
         // 先验证合法性
         CommandGroupVerifier.verify(commandGroup);
 
-        CommandGroupHolder commandGroupHolder = new CommandGroupHolder(plugin, this, commandGroup);
+        CommandGroupContext commandGroupContext = new CommandGroupContext(plugin, this, commandGroup);
         CommandTree currentTree = commandManager.getRootCommandTree();
 
         // 处理全局层面的映射
         if (pluginScopeCommandMapping != null) {
-            currentTree = solveCommandMappingElement(currentTree, commandGroupHolder, pluginScopeCommandMapping);
+            currentTree = solveCommandMappingElement(currentTree, commandGroupContext, pluginScopeCommandMapping);
         }
 
         Class<?> commandGroupClass = commandGroup.getClass();
@@ -176,7 +176,7 @@ public class CommandFramework {
 
         // 处理 CommandGroup 层面的映射
         if (commandMappingAnnotation != null) {
-            currentTree = solveCommandMappingElement(currentTree, commandGroupHolder, commandMappingAnnotation);
+            currentTree = solveCommandMappingElement(currentTree, commandGroupContext, commandMappingAnnotation);
         }
 
         // 处理命令体
@@ -184,7 +184,7 @@ public class CommandFramework {
             CommandBody commandBodyAnnotation = method.getDeclaredAnnotation(CommandBody.class);
 
             if (commandBodyAnnotation != null) {
-                CommandBodyElement element = new CommandBodyElement(commandGroupHolder, method, commandBodyAnnotation);
+                CommandBodyElement element = new CommandBodyElement(commandGroupContext, method, commandBodyAnnotation);
 
                 currentTree.addChild(new CommandTree(element));
             }
@@ -194,7 +194,8 @@ public class CommandFramework {
         logger.debug("command registered: " + commandGroup);
         logger.debug("current command tree: ");
         Arrays.stream(commandManager.getRootCommandTree().getTreeAsString().split("\n")).forEach(logger::debug);
-        return commandGroupHolder;
+        commandGroupContexts.add(commandGroupContext);
+        return commandGroupContext;
     }
 
     /**
