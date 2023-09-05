@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
 }
 
 
@@ -10,7 +9,6 @@ allprojects {
     }
 
     apply plugin: 'java'
-    apply plugin: 'kotlin'
 
     repositories {
         mavenLocal()
@@ -18,14 +16,6 @@ allprojects {
         maven {
             url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
         }
-    }
-
-    kotlin {
-        jvmToolchain(8)
-    }
-
-    dependencies {
-        implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     }
 }
 
