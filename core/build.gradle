@@ -3,16 +3,18 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'maven-publish'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 group 'com.github.julyss2019'
-version = '1.0.2'
+version = '1.0.4'
 
 tasks.withType(JavaCompile) {
     options.compilerArgs.add('-parameters')
 }
 
 dependencies {
+    implementation 'me.lucko:jar-relocator:1.7'
     compileOnly 'org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT'
     compileOnly 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
     compileOnly 'net.md-5:bungeecord-chat:1.16-R0.4'
@@ -27,6 +29,7 @@ dependencies {
     testImplementation(platform('org.junit:junit-bom:5.8.2'))
     testImplementation('org.junit.jupiter:junit-jupiter')
     testImplementation "org.mockito:mockito-core:4.4.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 publishing {
@@ -62,4 +65,14 @@ test {
 
 repositories {
     mavenCentral()
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }

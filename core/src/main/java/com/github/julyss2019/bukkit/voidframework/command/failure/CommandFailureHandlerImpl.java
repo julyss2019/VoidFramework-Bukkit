@@ -23,7 +23,7 @@ public class CommandFailureHandlerImpl implements CommandFailureHandler {
         Messages.sendColoredPlaceholderMessage(sender, failureLocaleResource.getString("missing-permission"),
                 new PlaceholderContainer()
                         .put("command-line", CommandLineArrayToStringConverter.convertToString(commandLineArray))
-                        .put("permissions", String.join(failureLocaleResource.getString("permission-or"), commandLineArray)));
+                        .put("permissions", String.join(failureLocaleResource.getString("permission-or"), permissions)));
     }
 
     /**

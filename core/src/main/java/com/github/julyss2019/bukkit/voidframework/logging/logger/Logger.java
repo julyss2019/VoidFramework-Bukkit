@@ -110,7 +110,7 @@ public class Logger {
     public void log(@NonNull Level level, @NonNull String msg, Object... args) {
         Validator.checkNotContainsNullElement(args, "args cannot contains null");
 
-        log0(level, String.format(msg, args));
+        log0(level, msg);
     }
 
     private void log0(Level level, String msg) {

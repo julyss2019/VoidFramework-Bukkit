@@ -44,12 +44,13 @@ public class ConsoleAppender extends BaseAppender {
         ChatColor color = getColor(messageContext.getLevel());
         String message = color + getLayout().format(messageContext);
 
+        Bukkit.getConsoleSender().sendMessage(message);
         // 确保在主线程写入
-        if (Bukkit.isPrimaryThread()) {
+/*        if (Bukkit.isPrimaryThread()) {
             Bukkit.getConsoleSender().sendMessage(message);
         } else {
             messageContext.getVoidFrameworkPlugin().getConsoleAppenderFlushTask().addConsoleMessage(message);
-        }
+        }*/
     }
 
     @Override

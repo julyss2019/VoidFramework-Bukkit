@@ -24,6 +24,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.Locale;
 
 @CommandMapping(value = "void-framework", permission = "void-framework.admin")
@@ -101,13 +102,13 @@ public class VoidFrameworkPlugin extends JavaPlugin {
         return localeResource;
     }
 
-    private void saveResources(){
+    private void saveResources() {
         Plugins.savePluginResource(this, "config", getDataFolder(), false);
     }
 
     private void runTasks() {
         new LoggerDailyFileAppenderAutoFlushTask(this).runTaskTimerAsynchronously(this, 0L, 20L);
-        (this.consoleAppenderFlushTask = new ConsoleAppenderFlushTask(this)).runTaskTimer(this, 0L, 20L);
+        (this.consoleAppenderFlushTask = new ConsoleAppenderFlushTask(this)).runTaskTimer(this, 0L, 1L);
     }
 
     public ConsoleAppenderFlushTask getConsoleAppenderFlushTask() {
@@ -132,5 +133,9 @@ public class VoidFrameworkPlugin extends JavaPlugin {
 
     public CommandFramework getCommandFramework() {
         return commandFramework;
+    }
+
+    public File getLibrariesDir() {
+        return new File(getDataFolder(), "libs");
     }
 }
