@@ -1,3 +1,0 @@
-command:
-  player:
-    offline: '玩家 ${player} 不在线.'

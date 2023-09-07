@@ -1,31 +1,36 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'maven-publish'
 }
 
-group 'com.github.julyss2019'
-version = '1.0.4'
-
-tasks.withType(JavaCompile) {
-    options.compilerArgs.add('-parameters')
-}
+group = 'com.github.julyss2019.bukkit'
+version = '2.0.0'
 
 dependencies {
-    compileOnly 'org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT'
-    compileOnly 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
-    compileOnly 'net.md-5:bungeecord-chat:1.16-R0.4'
-    compileOnly fileTree(dir: 'libs', includes: ['*jar'])
-    compileOnly 'org.projectlombok:lombok:1.18.26'
-    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    implementation project(':api')
+    implementation project(':api-legacy')
+    implementation 'me.lucko:jar-relocator:1.7'
+    compileOnly 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
+}
 
-    testImplementation 'org.bukkit:bukkit:1.13.2-R0.1-SNAPSHOT'
-    testImplementation 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
-    testImplementation 'net.md-5:bungeecord-chat:1.16-R0.4'
-    testImplementation(platform('org.junit:junit-bom:5.8.2'))
-    testImplementation('org.junit.jupiter:junit-jupiter')
-    testImplementation "org.mockito:mockito-core:4.4.0"
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from 'src/main/resources/plugin.yml'
+    filter(ReplaceTokens, beginToken: '${', endToken: '}', tokens: ["version": project.version])
+}
+
+shadowJar {
+    archiveBaseName.set(rootProject.name)
+    archiveClassifier.set('')
+
+    final prefix = 'com.void01.bukkit.voidframework.core.libs.'
+
+    relocate('org.objectweb', prefix + 'org.objectweb')
+    relocate('me.lucko', prefix + 'me.lucko')
+
+    relocate('kotlin', 'kotlin_1_9_10')
 }
 
 publishing {
@@ -33,32 +38,10 @@ publishing {
         shadow(MavenPublication) { publication ->
             project.shadow.component(publication)
 
-            artifactId = "VoidFramework-Bukkit"
+            artifactId = 'void-framework-bukkit-core'
         }
     }
     repositories {
         mavenLocal()
     }
-}
-
-shadowJar {
-    String prefix = rootProject.group + "." + rootProject.name + ".libs."
-
-    archiveBaseName.set(rootProject.name)
-    archiveClassifier.set('')
-}
-
-processResources {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    from "src/main/resources/plugin.yml"
-    filter(ReplaceTokens, beginToken: '${', endToken: '}', tokens: ["version": project.version])
-}
-
-test {
-    useJUnitPlatform()
-}
-
-repositories {
-    mavenCentral()
 }
