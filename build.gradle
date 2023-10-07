@@ -7,7 +7,14 @@ plugins {
 allprojects {
     group 'com.void01.bukkit'
 
+    kotlin {
+        jvmToolchain(8)
+    }
+
     tasks.withType(JavaCompile) {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+
         options.encoding = 'UTF-8'
         options.compilerArgs.add('-parameters')
     }
@@ -37,6 +44,10 @@ allprojects {
 
 tasks.register('buildAPILegacy', GradleBuild) {
     tasks = [':api-legacy:clean', ':api-legacy:publishToMavenLocal']
+}
+
+tasks.register('buildCommon', GradleBuild) {
+    tasks = [':common:clean', ':common:publishToMavenLocal']
 }
 
 tasks.register('buildAPI', GradleBuild) {

@@ -77,9 +77,10 @@ public class FileAppender extends BaseAppender {
                 // https://stackoverflow.com/questions/20884521/date-created-is-not-going-to-change-while-delete-file-and-then-create-file
                 // 解决关于在 Windows 删除文件后再创建，文件创建时间不更新的问题
                 Files.setAttribute(file.toPath(), "creationTime", FileTime.fromMillis(System.currentTimeMillis()), LinkOption.NOFOLLOW_LINKS);
+                this.bufferedWriter = new BufferedWriter(new FileWriter(file, false));
+            } else {
+                this.bufferedWriter = new BufferedWriter(new FileWriter(file, true));
             }
-
-            this.bufferedWriter = new BufferedWriter(new FileWriter(file, true));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -139,8 +140,9 @@ public class FileAppender extends BaseAppender {
 
     @Override
     public void append(@NonNull MessageContext messageContext) {
-        super.append(messageContext);
-
-        write(getLayout().format(messageContext));
+        synchronized (this) {
+            super.append(messageContext);
+            write(getLayout().format(messageContext));
+        }
     }
 }

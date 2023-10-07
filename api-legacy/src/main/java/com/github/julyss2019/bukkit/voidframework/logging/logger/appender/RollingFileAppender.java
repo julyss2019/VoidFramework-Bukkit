@@ -128,8 +128,10 @@ public class RollingFileAppender extends FileAppender {
 
     @Override
     public void append(@NonNull MessageContext messageContext) {
-        roll();
-        // 使用 FileAppender 实现
-        super.append(messageContext);
+        synchronized (this) {
+            roll();
+            // 使用 FileAppender 实现
+            super.append(messageContext);
+        }
     }
 }

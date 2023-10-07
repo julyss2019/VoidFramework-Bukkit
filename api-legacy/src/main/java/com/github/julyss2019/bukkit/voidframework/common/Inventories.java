@@ -93,7 +93,7 @@ public class Inventories {
         Validator.checkState(amount > 0, "amount must > 0");
         Validator.checkNotContainsNullElement(slots, "slots cannot contains null");
 
-        int finishedAmount = 0;
+        int effectedAmount = 0;
 
         for (int slot : slots) {
             ItemStack item = inventory.getItem(slot);
@@ -105,24 +105,24 @@ public class Inventories {
             if (predicate.test(item)) {
                 int itemAmount = item.getAmount();
 
-                if (finishedAmount + itemAmount > amount) {
+                if (effectedAmount + itemAmount > amount) {
                     ItemStack newAmountItem = item.clone();
 
-                    newAmountItem.setAmount(amount - finishedAmount);
+                    newAmountItem.setAmount(itemAmount - (amount - effectedAmount));
                     inventory.setItem(slot, newAmountItem);
-                    finishedAmount = amount;
+                    effectedAmount = amount;
                 } else {
                     inventory.setItem(slot, null);
-                    finishedAmount += itemAmount;
+                    effectedAmount += itemAmount;
                 }
             }
 
-            if (finishedAmount == amount) {
-                return finishedAmount;
+            if (effectedAmount == amount) {
+                return effectedAmount;
             }
         }
 
-        return finishedAmount;
+        return effectedAmount;
     }
 
     /**

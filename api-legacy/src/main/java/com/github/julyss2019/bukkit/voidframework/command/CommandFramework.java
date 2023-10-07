@@ -91,6 +91,7 @@ public class CommandFramework {
         addParamParser(new PlayerParamParser());
         addParamParser(new StringParamParser());
         addParamParser(new BooleanParamParser());
+        addParamParser(new LongParamParser());
     }
 
     public void addParamTabCompleter(@NonNull ParamTabCompleter paramTabCompleter) {
@@ -191,9 +192,9 @@ public class CommandFramework {
         }
 
         commandManager.adjustBukkitCommandIds();
-        logger.info("command registered: " + commandGroup);
-        logger.info("current command tree: ");
-        Arrays.stream(commandManager.getRootCommandTree().getTreeAsString().split("\n")).forEach(logger::info);
+        logger.debug("command registered: " + commandGroup);
+        logger.debug("current command tree: ");
+        Arrays.stream(commandManager.getRootCommandTree().getTreeAsString().split("\n")).forEach(logger::debug);
         commandGroupContexts.add(commandGroupContext);
         return commandGroupContext;
     }

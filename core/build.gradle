@@ -8,9 +8,14 @@ group = 'com.github.julyss2019.bukkit'
 version = '2.0.0'
 
 dependencies {
+    implementation project(':common')
     implementation project(':api')
     implementation project(':api-legacy')
+
     implementation 'me.lucko:jar-relocator:1.7'
+
+    compileOnly 'com.zaxxer:HikariCP:4.0.3'
+    compileOnly 'org.apache.groovy:groovy:4.0.14'
     compileOnly 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
 }
 
@@ -29,8 +34,7 @@ shadowJar {
 
     relocate('org.objectweb', prefix + 'org.objectweb')
     relocate('me.lucko', prefix + 'me.lucko')
-
-    relocate('kotlin', 'kotlin_1_9_10')
+    relocate('kotlin', prefix + 'kotlin')
 }
 
 publishing {

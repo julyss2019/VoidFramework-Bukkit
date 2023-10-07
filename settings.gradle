@@ -3,4 +3,5 @@ rootProject.name = 'VoidFramework-Bukkit'
 include 'core'
 include 'api'
 include 'api-legacy'
+include 'common'
 
