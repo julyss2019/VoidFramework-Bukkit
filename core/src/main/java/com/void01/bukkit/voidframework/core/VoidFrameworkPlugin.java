@@ -40,6 +40,7 @@ public class VoidFrameworkPlugin extends JavaPlugin implements Context {
                 .setDependencyByGradleStyleExpression("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
                 .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
                 .addSafeRelocation("_kotlin_", "_com.void01.bukkit.voidframework.core.libs.kotlin_")
+                .setResolveRecursively(true)
                 .build()
         );
         VoidFramework2.INSTANCE.setContext(this);
@@ -52,6 +53,15 @@ public class VoidFrameworkPlugin extends JavaPlugin implements Context {
 
         // 预加载，第一次加载需要时间
         groovyManager.eval("1+1");
+
+        libraryManager.load(Library.Builder
+                .create()
+                .setClassLoaderByBukkitPlugin(this)
+                .setDependencyByGradleStyleExpression("com.zaxxer:HikariCP:4.0.3")
+                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
+                .addSafeRelocation("_com.zaxxer.hikari_", "_com.void01.bukkit.voidframework.core.libs.com.zaxxer.hikari_")
+                .build()
+        );
 
         legacy = new LegacyVoidFrameworkPlugin(this);
         legacy.onEnable();

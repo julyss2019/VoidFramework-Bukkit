@@ -35,6 +35,7 @@ shadowJar {
     relocate('org.objectweb', prefix + 'org.objectweb')
     relocate('me.lucko', prefix + 'me.lucko')
     relocate('kotlin', prefix + 'kotlin')
+    relocate('com.zaxxer.hikari', prefix + 'com.zaxxer.hikari')
 }
 
 publishing {

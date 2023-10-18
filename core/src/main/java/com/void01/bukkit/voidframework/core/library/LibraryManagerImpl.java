@@ -33,18 +33,17 @@ public class LibraryManagerImpl implements LibraryManager {
             throw new IllegalArgumentException("repositories can not be empty");
         }
 
-        load0(library, 0);
+        load0(library.getDependency(), library, 0);
     }
 
-    private void load0(@NonNull Library library, int level) {
+    private void load0(@NonNull Dependency dependency, @NonNull Library library, int level) {
         logger.info(String.format("Loading dependency %s(level: %d) for %s.", library.getDependency().getAsGradleStyleExpression(), level, library.getClassLoader()));
 
-        Dependency topDependency = library.getDependency();
         List<Repository> repositories = library.getRepositories();
         List<Relocation> relocations = library.getRelocations();
 
-        downloadDependency(topDependency, DependencyFileType.JAR, repositories);
-        File jarFile = dependencyFileHelper.getDependencyMainFile(topDependency, DependencyFileType.JAR);
+        downloadDependency(dependency, DependencyFileType.JAR, repositories);
+        File jarFile = dependencyFileHelper.getDependencyMainFile(dependency, DependencyFileType.JAR);
 
         // 有的依赖没有 jar，而是 pom 里一大堆
         // 不允许这种情况
@@ -58,9 +57,12 @@ public class LibraryManagerImpl implements LibraryManager {
 
         if (library.isResolveRecursively()) {
             // POM
-            downloadDependency(topDependency, DependencyFileType.POM, repositories);
-            DependencyPomParser.parseCompileDependencies(dependencyFileHelper.getDependencyMainFile(topDependency, DependencyFileType.POM))
-                    .forEach(subDependency -> load0(library, level + 1));
+            downloadDependency(dependency, DependencyFileType.POM, repositories);
+            DependencyPomParser.parseCompileDependencies(dependencyFileHelper.getDependencyMainFile(dependency, DependencyFileType.POM))
+                    .forEach(subDependency -> {
+                        System.out.println(subDependency.getAsGradleStyleExpression());
+                        load0(subDependency, library, level + 1);
+                    });
         }
     }
 
