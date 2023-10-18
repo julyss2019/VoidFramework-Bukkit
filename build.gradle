@@ -42,16 +42,16 @@ allprojects {
     }
 }
 
-tasks.register('buildAPILegacy', GradleBuild) {
-    tasks = [':api-legacy:clean', ':api-legacy:publishToMavenLocal']
+tasks.register('publishAPILegacy', GradleBuild) {
+    tasks = [':api-legacy:clean', ':api-legacy:publish']
 }
 
-tasks.register('buildCommon', GradleBuild) {
-    tasks = [':common:clean', ':common:publishToMavenLocal']
+tasks.register('publishCommon', GradleBuild) {
+    tasks = [':common:clean', ':common:publish']
 }
 
-tasks.register('buildAPI', GradleBuild) {
-    tasks = [':api:clean', ':api:publishToMavenLocal']
+tasks.register('publishAPI', GradleBuild) {
+    tasks = [':api:clean', ':api:publish']
 }
 
 tasks.register('buildCore', GradleBuild) {
