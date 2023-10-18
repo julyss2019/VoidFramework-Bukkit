@@ -1,6 +1,6 @@
 # VoidFramework-Bukkit
 
-给自己做的 Bukkit 开发框架。
+给自己写的 Bukkit 框架，实现了一些实用功能。
 
 ## 构建
 
