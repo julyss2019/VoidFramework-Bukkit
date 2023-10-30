@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.github.julyss2019.bukkit'
-version = '2.0.1.alpha1'
+version = '2.1.0'
 
 dependencies {
     implementation project(':common')
