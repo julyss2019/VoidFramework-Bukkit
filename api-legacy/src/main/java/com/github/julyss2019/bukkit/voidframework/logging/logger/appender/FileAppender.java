@@ -54,13 +54,7 @@ public class FileAppender extends BaseAppender {
      * 打开写入器
      */
     private void setNewWriter() {
-        if (bufferedWriter != null) {
-            try {
-                bufferedWriter.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        closeWriter();
 
         try {
             File parent = file.getParentFile();
@@ -101,6 +95,7 @@ public class FileAppender extends BaseAppender {
 
     /**
      * 写到缓存
+     *
      * @param line 行
      */
     protected void write(@NonNull String line) {
