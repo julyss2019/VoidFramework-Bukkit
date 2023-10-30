@@ -45,12 +45,6 @@ public class ConsoleAppender extends BaseAppender {
         String message = color + getLayout().format(messageContext);
 
         Bukkit.getConsoleSender().sendMessage(message);
-        // 确保在主线程写入
-/*        if (Bukkit.isPrimaryThread()) {
-            Bukkit.getConsoleSender().sendMessage(message);
-        } else {
-            messageContext.getVoidFrameworkPlugin().getConsoleAppenderFlushTask().addConsoleMessage(message);
-        }*/
     }
 
     @Override
