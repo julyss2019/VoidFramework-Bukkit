@@ -25,7 +25,6 @@ object VoidFramework2 {
     }
 
     fun getDataSourceManager() : DataSourceManager {
-        String
         return context.dataSourceManager
     }
 }
