@@ -102,6 +102,7 @@ public class RollingFileAppender extends FileAppender {
                     }
 
                     zipOut.closeEntry();
+                    bufferedRolledFileInput.close();
 
                     if (!rolledFile.delete()) {
                         throw new RuntimeException("delete file failed: " + rolledFile.getAbsolutePath());
