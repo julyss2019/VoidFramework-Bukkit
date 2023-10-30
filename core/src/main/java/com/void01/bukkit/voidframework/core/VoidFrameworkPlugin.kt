@@ -70,12 +70,6 @@ class VoidFrameworkPlugin : JavaPlugin(), Context {
         groovyManager = GroovyManagerImpl(this)
         sharedDataSourceManager = SharedDataSourceManagerImpl(this)
 
-        try {
-            sharedDataSourceManager.getDataSourceOrThrow("common").connection.close()
-        } catch (e: SQLException) {
-            throw RuntimeException(e)
-        }
-
         // 预加载，第一次加载需要时间
         groovyManager.eval("1+1")
     }
