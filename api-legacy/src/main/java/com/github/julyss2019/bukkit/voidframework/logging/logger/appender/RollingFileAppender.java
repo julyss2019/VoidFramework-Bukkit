@@ -56,48 +56,6 @@ public class RollingFileAppender extends FileAppender {
     }
 
     /**
-     * 主文件重命名
-     */
-    private void rollFile(String rolledFileName) {
-        closeWriter();
-
-        File rolledFile = getFile(); // 被 roll 的文件, latest.log
-
-        if (compress) {
-            File destFile = new File(rolledFile.getParentFile() + File.separator + rolledFileName + ".zip");
-
-            try (ZipOutputStream zipOut = new ZipOutputStream(Files.newOutputStream(destFile.toPath()))) {
-                ZipEntry entry = new ZipEntry(rolledFile.getName());
-
-                zipOut.putNextEntry(entry);
-
-                InputStream rolledFileInput = Files.newInputStream(rolledFile.toPath());
-                BufferedInputStream bufferedRolledFileInput = new BufferedInputStream(rolledFileInput);
-                byte[] buffer = new byte[1024];
-                int len;
-
-                while ((len = bufferedRolledFileInput.read(buffer)) != -1) {
-                    zipOut.write(buffer, 0, len);
-                }
-
-                zipOut.closeEntry();
-
-                if (!rolledFile.delete()) {
-                    throw new RuntimeException("delete file failed: " + rolledFile.getAbsolutePath());
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            File destFile = new File(rolledFile.getParentFile() + File.separator + rolledFileName);
-
-            if (!rolledFile.renameTo(destFile)) {
-                throw new RuntimeException("rename file " + rolledFile.getAbsolutePath() + " to " + destFile.getAbsolutePath() + " failed");
-            }
-        }
-    }
-
-    /**
      * 更替文件
      */
     private void roll() {
@@ -122,7 +80,42 @@ public class RollingFileAppender extends FileAppender {
         String oldFileName = RollingFileNamePatternConverter.convert(rollingFileNamePattern, fileCreateDate);
 
         if (!newFileName.equals(oldFileName)) {
-            rollFile(oldFileName);
+            closeWriter();
+
+            File rolledFile = getFile(); // 被 roll 的文件, latest.log
+
+            if (compress) {
+                File destFile = new File(rolledFile.getParentFile() + File.separator + oldFileName + ".zip");
+
+                try (ZipOutputStream zipOut = new ZipOutputStream(Files.newOutputStream(destFile.toPath()))) {
+                    ZipEntry entry = new ZipEntry(rolledFile.getName());
+
+                    zipOut.putNextEntry(entry);
+
+                    InputStream rolledFileInput = Files.newInputStream(rolledFile.toPath());
+                    BufferedInputStream bufferedRolledFileInput = new BufferedInputStream(rolledFileInput);
+                    byte[] buffer = new byte[1024];
+                    int len;
+
+                    while ((len = bufferedRolledFileInput.read(buffer)) != -1) {
+                        zipOut.write(buffer, 0, len);
+                    }
+
+                    zipOut.closeEntry();
+
+                    if (!rolledFile.delete()) {
+                        throw new RuntimeException("delete file failed: " + rolledFile.getAbsolutePath());
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                File destFile = new File(rolledFile.getParentFile() + File.separator + oldFileName);
+
+                if (!rolledFile.renameTo(destFile)) {
+                    throw new RuntimeException("rename file " + rolledFile.getAbsolutePath() + " to " + destFile.getAbsolutePath() + " failed");
+                }
+            }
         }
     }
 
