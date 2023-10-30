@@ -16,7 +16,6 @@ import com.void01.bukkit.voidframework.core.datasource.shared.SharedDataSourceMa
 import com.void01.bukkit.voidframework.core.groovy.GroovyManagerImpl
 import com.void01.bukkit.voidframework.core.library.LibraryManagerImpl
 import org.bukkit.plugin.java.JavaPlugin
-import java.sql.SQLException
 
 @CommandMapping(value = "void-framework", permission = "void-framework.admin")
 class VoidFrameworkPlugin : JavaPlugin(), Context {
