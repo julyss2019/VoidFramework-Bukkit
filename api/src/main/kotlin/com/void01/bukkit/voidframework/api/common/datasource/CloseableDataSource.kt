@@ -12,6 +12,7 @@ DataSource 没有 close()
  * 简单的连接池
  * 额外提供了 [isClosed] [close] 方法
  */
+@Deprecated("使用 SharedDataSource")
 interface CloseableDataSource : DataSource {
     fun isClosed() : Boolean
 
