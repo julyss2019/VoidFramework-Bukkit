@@ -133,9 +133,10 @@ public class FileAppender extends BaseAppender {
 
     @Override
     public void close() {
-        super.close();
-
-        closeWriter();
+        synchronized (this) {
+            super.close();
+            closeWriter();
+        }
     }
 
     @Override
