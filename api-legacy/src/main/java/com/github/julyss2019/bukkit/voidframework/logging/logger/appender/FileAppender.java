@@ -33,6 +33,10 @@ public class FileAppender extends BaseAppender {
         return flushInterval;
     }
 
+    public File getFile() {
+        return file;
+    }
+
     public void setFlushInterval(int flushInterval) {
         Validator.checkState(flushInterval >= 0, "flushInterval must >= 0");
 
@@ -44,10 +48,6 @@ public class FileAppender extends BaseAppender {
             closeWriter(); // 关闭老的
             this.file = file;
         }
-    }
-
-    public File getFile() {
-        return file;
     }
 
     /**
