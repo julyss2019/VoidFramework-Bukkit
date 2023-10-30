@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.github.julyss2019.bukkit'
-version = '2.0.0'
+version = '2.0.1.alpha1'
 
 dependencies {
     implementation project(':common')
@@ -30,7 +30,7 @@ shadowJar {
     archiveBaseName.set(rootProject.name)
     archiveClassifier.set('')
 
-    final prefix = 'com.void01.bukkit.voidframework.core.libs.'
+    final prefix = 'com.void01.bukkit.voidframework.core.lib.'
 
     relocate('org.objectweb', prefix + 'org.objectweb')
     relocate('me.lucko', prefix + 'me.lucko')
@@ -38,15 +38,6 @@ shadowJar {
     relocate('com.zaxxer.hikari', prefix + 'com.zaxxer.hikari')
 }
 
-publishing {
-    publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
-
-            artifactId = 'void-framework-bukkit-core'
-        }
-    }
-    repositories {
-        mavenLocal()
-    }
+tasks.named('build') {
+    dependsOn shadowJar
 }
