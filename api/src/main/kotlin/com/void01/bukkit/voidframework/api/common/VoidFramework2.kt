@@ -24,6 +24,7 @@ object VoidFramework2 {
         return context.libraryManager
     }
 
+    @Deprecated(message = "弃用")
     fun getDataSourceManager() : DataSourceManager {
         return context.dataSourceManager
     }
