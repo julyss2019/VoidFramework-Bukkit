@@ -4,4 +4,4 @@
 
 ## 构建
 
-`gradle buildCoreAndPublish`
+`gradlew clean build`
