@@ -6,6 +6,7 @@ import java.sql.Connection
 import java.util.logging.Logger
 import javax.sql.DataSource
 
+@Deprecated(message = "弃用")
 abstract class CloseableDataSourceImpl(private val dataSource: DataSource) : CloseableDataSource {
     override fun getLogWriter(): PrintWriter {
         return dataSource.logWriter

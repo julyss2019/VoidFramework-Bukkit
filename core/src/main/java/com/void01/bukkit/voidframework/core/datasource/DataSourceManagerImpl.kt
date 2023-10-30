@@ -5,6 +5,7 @@ import com.void01.bukkit.voidframework.api.common.datasource.CloseableDataSource
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 
+@Deprecated(message = "弃用")
 class DataSourceManagerImpl : DataSourceManager {
     override fun getHikari(jdbcUrl: String, userName: String, password: String): CloseableDataSource {
         val config = HikariConfig().apply {
