@@ -4,6 +4,6 @@ shared-data-sources:
     type: hikari
     config:
       jdbcUrl: 'jdbc:mysql://localhost:3306/test?useSSL=false'
-      user: 'root'
+      username: 'root'
       password: '123456'
       maximumPoolSize: 5
