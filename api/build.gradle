@@ -2,7 +2,7 @@ plugins {
     id 'maven-publish'
 }
 
-version = '2.1.1-alpha'
+version = '2.1.1'
 
 dependencies {
     compileOnly project(':common')
