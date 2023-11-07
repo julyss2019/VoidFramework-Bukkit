@@ -19,8 +19,6 @@ class HikariSharedDataSource : SharedDataSource {
             properties[it] = section.get(it)
         }
 
-        println(properties.getProperty("user"))
-
         hikariDataSource = HikariDataSource(HikariConfig(properties))
     }
 
