@@ -28,18 +28,16 @@ public class IsolatedClassLoader extends URLClassLoader {
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        synchronized (getClassLoadingLock(name)) {
+        return super.loadClass(name);
+
+/*        synchronized (getClassLoadingLock(name)) {
             Class<?> loadedClass = findLoadedClass(name);
 
             if (loadedClass != null) {
                 return loadedClass;
             }
 
-            try {
-                return this.findClass(name);
-            } catch (ClassNotFoundException ex) {
-                return super.loadClass(name);
-            }
-        }
+            return super.loadClass(name);
+        }*/
     }
 }
