@@ -28,16 +28,22 @@ public class IsolatedClassLoader extends URLClassLoader {
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        return super.loadClass(name);
+        synchronized (getClassLoadingLock(name)) {
+            if (name.startsWith("io.izzel.arclight")) {
+                return super.loadClass(name);
+            }
 
-/*        synchronized (getClassLoadingLock(name)) {
             Class<?> loadedClass = findLoadedClass(name);
 
             if (loadedClass != null) {
                 return loadedClass;
             }
 
-            return super.loadClass(name);
-        }*/
+            try {
+                return findClass(name);
+            } catch (ClassNotFoundException exception) {
+                return super.loadClass(name);
+            }
+        }
     }
 }
