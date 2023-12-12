@@ -5,6 +5,7 @@ plugins {
 }
 
 allprojects {
+    version '2.1.2'
     group 'com.void01.bukkit'
 
     kotlin {
