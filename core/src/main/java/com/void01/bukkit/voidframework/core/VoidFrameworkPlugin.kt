@@ -3,6 +3,7 @@ package com.void01.bukkit.voidframework.core
 import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandMapping
 import com.github.julyss2019.bukkit.voidframework.internal.LegacyVoidFrameworkPlugin
 import com.github.julyss2019.bukkit.voidframework.logging.logger.Logger
+import com.void01.bukkit.voidframework.api.common.JavaVoidFramework2
 import com.void01.bukkit.voidframework.api.common.VoidFramework2
 import com.void01.bukkit.voidframework.api.common.datasource.DataSourceManager
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSourceManager
@@ -58,6 +59,7 @@ class VoidFrameworkPlugin : JavaPlugin(), Context {
                 .build()
         )
         VoidFramework2.setContext(this)
+        JavaVoidFramework2.setContext(this)
     }
 
     override fun onEnable() {
