@@ -2,8 +2,6 @@ plugins {
     id 'maven-publish'
 }
 
-version = '2.1.2-alpha'
-
 dependencies {
     compileOnly project(':common')
 }
