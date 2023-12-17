@@ -18,6 +18,7 @@ allprojects {
 
         options.encoding = 'UTF-8'
         options.compilerArgs.add('-parameters')
+        options.compilerArgs.add('-XDenableSunApiLintControl') // 抑制内部 API 警告
     }
 
     apply plugin: 'java'
