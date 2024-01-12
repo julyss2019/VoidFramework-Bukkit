@@ -29,7 +29,7 @@ public class IsolatedClassLoader extends URLClassLoader {
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(name)) {
-            if (name.startsWith("io.izzel.arclight")) {
+            if (name.startsWith("io.izzel.arclight") || name.startsWith("java")) {
                 return super.loadClass(name);
             }
 
