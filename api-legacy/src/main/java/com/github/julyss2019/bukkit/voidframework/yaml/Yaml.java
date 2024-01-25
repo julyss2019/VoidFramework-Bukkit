@@ -5,8 +5,9 @@ import lombok.NonNull;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Yaml 模块
@@ -48,13 +49,30 @@ public class Yaml extends Section {
     }
 
     /**
+     * 从文件中读取（以 UTF-8 编码读取）
+     *
+     * @param file 文件
+     */
+    public static Yaml fromFile(@NonNull File file) {
+        return fromFile(file, StandardCharsets.UTF_8);
+    }
+
+    /**
      * 从文件中读取
      *
      * @param file 文件
      * @return Yaml 对象
      */
-    public static Yaml fromFile(@NonNull File file) {
-        return fromBukkitYaml(YamlConfiguration.loadConfiguration(file));
+    public static Yaml fromFile(@NonNull File file, Charset charset) {
+        BufferedReader bufferedReader;
+
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return fromBukkitYaml(YamlConfiguration.loadConfiguration(bufferedReader));
     }
 
     /**
