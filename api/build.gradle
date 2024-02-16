@@ -6,6 +6,10 @@ dependencies {
     compileOnly project(':common')
 }
 
+tasks.named('build') {
+    dependsOn publishToMavenLocal
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
@@ -18,7 +22,7 @@ publishing {
         mavenLocal()
         maven {
             allowInsecureProtocol = true
-            url = 'http://maven.void01.com/repository/bukkit-plugin/'
+            url = 'https://maven.void01.com/repository/bukkit-plugin/'
 
             credentials {
                 username = project.findProperty('nexus.username')
