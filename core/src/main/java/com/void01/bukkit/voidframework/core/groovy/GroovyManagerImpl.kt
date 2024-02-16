@@ -8,9 +8,6 @@ import com.void01.bukkit.voidframework.api.common.library.IsolatedClassLoader
 import com.void01.bukkit.voidframework.api.common.library.Library
 import com.void01.bukkit.voidframework.api.common.library.Repository
 import com.void01.bukkit.voidframework.core.VoidFrameworkPlugin
-import groovy.lang.Binding
-import groovy.lang.GroovyClassLoader
-import groovy.lang.GroovyShell
 import java.io.File
 
 class GroovyManagerImpl(plugin: VoidFrameworkPlugin) : GroovyManager {
@@ -123,7 +120,7 @@ class GroovyManagerImpl(plugin: VoidFrameworkPlugin) : GroovyManager {
     用了 parentClassLoader 没 groovy
     用了 isolatedClassLoader 没 parent
     进行混合
-     */
+    */
     private fun getMixedClassLoader(classLoader: ClassLoader): ClassLoader {
         return object : ClassLoader() {
             // 注意使用 loadClass(String, Boolean)
@@ -136,5 +133,4 @@ class GroovyManagerImpl(plugin: VoidFrameworkPlugin) : GroovyManager {
             }
         }
     }
-
 }
