@@ -6,30 +6,36 @@ import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager
 import com.void01.bukkit.voidframework.api.internal.Context
 
-object VoidFramework2 {
+@Deprecated("弃用")
+object JavaVoidFramework2 {
     private lateinit var context: Context
 
+    @JvmStatic
     fun setContext(context: Context) {
-        if (VoidFramework2::context.isInitialized) {
+        if (JavaVoidFramework2::context.isInitialized) {
             throw UnsupportedOperationException()
         }
 
-        VoidFramework2.context = context
+        JavaVoidFramework2.context = context
     }
 
+    @JvmStatic
     fun getGroovyManager() : GroovyManager {
         return context.groovyManager
     }
 
+    @JvmStatic
     fun getLibraryManager(): LibraryManager {
         return context.libraryManager
     }
 
     @Deprecated(message = "弃用")
+    @JvmStatic
     fun getDataSourceManager() : DataSourceManager {
         return context.dataSourceManager
     }
 
+    @JvmStatic
     fun getSharedDataSourceManager() : SharedDataSourceManager {
         return context.sharedDataSourceManager
     }

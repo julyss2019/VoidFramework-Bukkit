@@ -5,17 +5,20 @@ import com.github.julyss2019.bukkit.voidframework.internal.LegacyVoidFrameworkPl
 import com.github.julyss2019.bukkit.voidframework.logging.logger.Logger
 import com.void01.bukkit.voidframework.api.common.JavaVoidFramework2
 import com.void01.bukkit.voidframework.api.common.VoidFramework2
+import com.void01.bukkit.voidframework.api.common.VoidFramework3
 import com.void01.bukkit.voidframework.api.common.datasource.DataSourceManager
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSourceManager
 import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager
 import com.void01.bukkit.voidframework.api.common.library.Library
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager
 import com.void01.bukkit.voidframework.api.common.library.Repository
+import com.void01.bukkit.voidframework.api.common.mongodb.MongoDbManager
 import com.void01.bukkit.voidframework.api.internal.Context
 import com.void01.bukkit.voidframework.core.datasource.DataSourceManagerImpl
 import com.void01.bukkit.voidframework.core.datasource.shared.SharedDataSourceManagerImpl
 import com.void01.bukkit.voidframework.core.groovy.GroovyManagerImpl
 import com.void01.bukkit.voidframework.core.library.LibraryManagerImpl
+import com.void01.bukkit.voidframework.core.mongodb.MongoDbManagerImpl
 import org.bukkit.plugin.java.JavaPlugin
 
 @CommandMapping(value = "void-framework", permission = "void-framework.admin")
@@ -29,6 +32,8 @@ class VoidFrameworkPlugin : JavaPlugin(), Context {
     override lateinit var groovyManager: GroovyManager
         private set
     override lateinit var sharedDataSourceManager: SharedDataSourceManager
+        private set
+    override lateinit var mongoDbManager: MongoDbManager
         private set
     lateinit var voidLogger: Logger
         private set
@@ -58,8 +63,67 @@ class VoidFrameworkPlugin : JavaPlugin(), Context {
                 )
                 .build()
         )
+        libraryManager.load(
+            Library.Builder
+                .create()
+                .setClassLoaderByBukkitPlugin(this)
+                .setDependencyByGradleStyleExpression("com.zaxxer:HikariCP:4.0.3")
+                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
+                .addSafeRelocation(
+                    "_com.zaxxer.hikari_",
+                    "_com.void01.bukkit.voidframework.core.lib.com.zaxxer.hikari_"
+                )
+                .build()
+        )
+
+        libraryManager.load(
+            Library.Builder
+                .create()
+                .setClassLoaderByBukkitPlugin(this)
+                .setDependencyByGradleStyleExpression("org.mongodb:mongodb-driver-sync:4.11.1")
+                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
+                .addSafeRelocation(
+                    "_com.mongodb_",
+                    "_com.mongodb.v4_11_1_"
+                )
+                .addSafeRelocation(
+                    "_org.bson_",
+                    "_org.bson.v4_11_1_"
+                )
+                .build()
+        )
+        libraryManager.load(
+            Library.Builder
+                .create()
+                .setClassLoaderByBukkitPlugin(this)
+                .setDependencyByGradleStyleExpression("org.mongodb:bson:4.11.1")
+                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
+                .addSafeRelocation(
+                    "_org.bson_",
+                    "_org.bson.v4_11_1_"
+                )
+                .build()
+        )
+        libraryManager.load(
+            Library.Builder
+                .create()
+                .setClassLoaderByBukkitPlugin(this)
+                .setDependencyByGradleStyleExpression("org.mongodb:mongodb-driver-core:4.11.1")
+                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
+                .addSafeRelocation(
+                    "_com.mongodb_",
+                    "_com.mongodb.v4_11_1_"
+                )
+                .addSafeRelocation(
+                    "_org.bson_",
+                    "_org.bson.v4_11_1_"
+                )
+                .build()
+        )
+
         VoidFramework2.setContext(this)
         JavaVoidFramework2.setContext(this)
+        VoidFramework3.setContext(this)
     }
 
     override fun onEnable() {
@@ -70,12 +134,12 @@ class VoidFrameworkPlugin : JavaPlugin(), Context {
         dataSourceManager = DataSourceManagerImpl()
         groovyManager = GroovyManagerImpl(this)
         sharedDataSourceManager = SharedDataSourceManagerImpl(this)
+        mongoDbManager = MongoDbManagerImpl(this)
 
-        // 预加载，第一次加载需要时间
-        groovyManager.eval("1+1")
     }
 
     override fun onDisable() {
         legacy!!.onDisable()
+        (mongoDbManager as MongoDbManagerImpl).closeAll()
     }
 }

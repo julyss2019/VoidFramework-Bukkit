@@ -1,5 +1,8 @@
 locale: 'zh_CN'
 shared-data-sources: {}
+mongodb-clients:
+  common:
+    url: 'mongodb://localhost:27017'
 #  common:
 #    type: hikari
 #    config:

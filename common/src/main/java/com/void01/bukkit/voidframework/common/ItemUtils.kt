@@ -23,4 +23,12 @@ object ItemUtils {
     fun isValid(item: ItemStack?): Boolean {
         return item != null && item.type != Material.AIR
     }
+
+    fun getDisplayName(item: ItemStack?): String? {
+        if (!isValid(item)) {
+            return null
+        }
+
+        return item!!.itemMeta?.displayName
+    }
 }
