@@ -1,10 +1,6 @@
 package com.void01.bukkit.voidframework.api.common.groovy
 
-import com.void01.bukkit.voidframework.api.common.VoidFramework2
-
-@Deprecated("弃用")
-class GroovyConfig {
-    var parentClassLoader : ClassLoader = VoidFramework2::class.java.classLoader
+class GroovyCompilerConfig {
     var sourceEncoding: String = "UTF-8"
     private val classPaths = mutableSetOf<String>()
 

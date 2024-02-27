@@ -6,7 +6,7 @@ import lombok.NonNull;
  * 主要为了解决 Relocation 重定向规则被 ShadowJar 或 maven-shade-plugin 误 relocate 的问题
  * ShadowJar: relocate('kotlin', 'kotlin123')
  * 代码 shadow 之前: new Relocation("kotlin", "kotlin1910")
- * 代码 shadow 之后: new Relocation("kotlin123", "kotlin1910")
+ * 代码 shadow 之后: new Relocation("kotlin123", "kotlin1231910")
  */
 public class SafeRelocation extends Relocation {
     public SafeRelocation(@NonNull String from, @NonNull String to) {

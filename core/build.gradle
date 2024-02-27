@@ -11,10 +11,9 @@ dependencies {
     implementation project(':api')
     implementation project(':api-legacy')
 
-    implementation 'me.lucko:jar-relocator:1.7'
-
     compileOnly 'com.zaxxer:HikariCP:4.0.3'
-    compileOnly 'org.apache.groovy:groovy:4.0.14'
+    // compileOnly 'me.lucko:jar-relocator:1.7'
+    // compileOnly 'org.apache.groovy:groovy:4.0.14'
 }
 
 processResources {
@@ -28,12 +27,8 @@ shadowJar {
     archiveBaseName.set(rootProject.name)
     archiveClassifier.set('')
 
-    final prefix = 'com.void01.bukkit.voidframework.core.lib.'
-
-    relocate('org.objectweb', prefix + 'org.objectweb')
-    relocate('me.lucko', prefix + 'me.lucko')
-    relocate('kotlin', prefix + 'kotlin')
-    relocate('com.zaxxer.hikari', prefix + 'com.zaxxer.hikari')
+    relocate('com.zaxxer.hikari', 'com.zaxxer.hikari.v4_0_3')
+    relocate('kotlin', 'kotlin.v1_9_20')
 }
 
 tasks.named('build') {

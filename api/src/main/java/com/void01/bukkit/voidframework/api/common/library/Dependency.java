@@ -17,4 +17,14 @@ public class Dependency {
     public String getAsGradleStyleExpression() {
         return groupId + ":" + artifactId + ":" + version;
     }
+
+    public static Dependency fromGradleStyleExpression(@NonNull String expression) {
+        String[] split = expression.split(":");
+
+        if (split.length != 3) {
+            throw new IllegalArgumentException("Invalid expression");
+        }
+
+        return new Dependency(split[0], split[1], split[2]);
+    }
 }

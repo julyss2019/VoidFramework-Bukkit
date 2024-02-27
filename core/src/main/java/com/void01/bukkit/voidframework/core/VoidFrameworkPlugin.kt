@@ -9,9 +9,10 @@ import com.void01.bukkit.voidframework.api.common.VoidFramework3
 import com.void01.bukkit.voidframework.api.common.datasource.DataSourceManager
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSourceManager
 import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager
-import com.void01.bukkit.voidframework.api.common.library.Library
+import com.void01.bukkit.voidframework.api.common.library.DependencyLoader
+import com.void01.bukkit.voidframework.api.common.library.IsolatedClassLoader
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager
-import com.void01.bukkit.voidframework.api.common.library.Repository
+import com.void01.bukkit.voidframework.api.common.library.relocation.Relocation
 import com.void01.bukkit.voidframework.api.common.mongodb.MongoDbManager
 import com.void01.bukkit.voidframework.api.internal.Context
 import com.void01.bukkit.voidframework.core.datasource.DataSourceManagerImpl
@@ -24,10 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin
 @CommandMapping(value = "void-framework", permission = "void-framework.admin")
 class VoidFrameworkPlugin : JavaPlugin(), Context {
     private var legacy: LegacyVoidFrameworkPlugin? = null
-
     override var libraryManager: LibraryManager
-        private set
-    override lateinit var dataSourceManager: DataSourceManager
         private set
     override lateinit var groovyManager: GroovyManager
         private set
@@ -35,95 +33,47 @@ class VoidFrameworkPlugin : JavaPlugin(), Context {
         private set
     override lateinit var mongoDbManager: MongoDbManager
         private set
+    override lateinit var dataSourceManager: DataSourceManager
+        private set
     lateinit var voidLogger: Logger
         private set
 
     // 提前加载
     init {
         libraryManager = LibraryManagerImpl(this)
-        libraryManager.load(
-            Library.Builder
-                .create()
-                .setClassLoaderByBukkitPlugin(this)
-                .setDependencyByGradleStyleExpression("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
-                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
-                .addSafeRelocation("_kotlin_", "_com.void01.bukkit.voidframework.core.lib.kotlin_")
-                .setResolveRecursively(true)
-                .build()
-        )
-        libraryManager.load(
-            Library.Builder
-                .create()
-                .setClassLoaderByBukkitPlugin(this)
-                .setDependencyByGradleStyleExpression("com.zaxxer:HikariCP:4.0.3")
-                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
-                .addSafeRelocation(
-                    "_com.zaxxer.hikari_",
-                    "_com.void01.bukkit.voidframework.core.lib.com.zaxxer.hikari_"
-                )
-                .build()
-        )
-        libraryManager.load(
-            Library.Builder
-                .create()
-                .setClassLoaderByBukkitPlugin(this)
-                .setDependencyByGradleStyleExpression("com.zaxxer:HikariCP:4.0.3")
-                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
-                .addSafeRelocation(
-                    "_com.zaxxer.hikari_",
-                    "_com.void01.bukkit.voidframework.core.lib.com.zaxxer.hikari_"
-                )
-                .build()
-        )
 
-        libraryManager.load(
-            Library.Builder
-                .create()
-                .setClassLoaderByBukkitPlugin(this)
-                .setDependencyByGradleStyleExpression("org.mongodb:mongodb-driver-sync:4.11.1")
-                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
-                .addSafeRelocation(
-                    "_com.mongodb_",
-                    "_com.mongodb.v4_11_1_"
-                )
-                .addSafeRelocation(
-                    "_org.bson_",
-                    "_org.bson.v4_11_1_"
-                )
-                .build()
-        )
-        libraryManager.load(
-            Library.Builder
-                .create()
-                .setClassLoaderByBukkitPlugin(this)
-                .setDependencyByGradleStyleExpression("org.mongodb:bson:4.11.1")
-                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
-                .addSafeRelocation(
-                    "_org.bson_",
-                    "_org.bson.v4_11_1_"
-                )
-                .build()
-        )
-        libraryManager.load(
-            Library.Builder
-                .create()
-                .setClassLoaderByBukkitPlugin(this)
-                .setDependencyByGradleStyleExpression("org.mongodb:mongodb-driver-core:4.11.1")
-                .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
-                .addSafeRelocation(
-                    "_com.mongodb_",
-                    "_com.mongodb.v4_11_1_"
-                )
-                .addSafeRelocation(
-                    "_org.bson_",
-                    "_org.bson.v4_11_1_"
-                )
-                .build()
-        )
-
+        loadDependencies()
+        VoidFramework3.setContext(this)
         VoidFramework2.setContext(this)
         JavaVoidFramework2.setContext(this)
-        VoidFramework3.setContext(this)
+    }
+
+    private fun loadDependencies() {
+        val dependencyLoader = DependencyLoader(libraryManager)
+
+        dependencyLoader.load(
+            "org.jetbrains.kotlin:kotlin-stdlib:1.9.20",
+            Relocation.createShadowSafely("_kotlin_", "_kotlin.v1_9_20_")
+        )
+        dependencyLoader.load(
+            "com.zaxxer:HikariCP:4.0.3",
+            Relocation.createShadowSafely("_com.zaxxer.hikari_", "_com.zaxxer.hikari.v4_0_3_")
+        )
+        dependencyLoader.load(
+            "org.mongodb:mongodb-driver-sync:4.11.1",
+            Relocation.createShadowSafely("_com.mongodb_", "_com.mongodb.v4_11_1_"),
+            Relocation.createShadowSafely("_org.bson_", "_org.bson.v4_11_1_"),
+        )
+        dependencyLoader.load(
+            "org.mongodb:bson:4.11.1",
+            Relocation.createShadowSafely("_org.bson_", "_org.bson.v4_11_1_"),
+        )
+        dependencyLoader.load(
+            "org.mongodb:mongodb-driver-core:4.11.1",
+            Relocation.createShadowSafely("_com.mongodb_", "_com.mongodb.v4_11_1_"),
+            Relocation.createShadowSafely("_org.bson_", "_org.bson.v4_11_1_"),
+        )
+
     }
 
     override fun onEnable() {
@@ -135,7 +85,6 @@ class VoidFrameworkPlugin : JavaPlugin(), Context {
         groovyManager = GroovyManagerImpl(this)
         sharedDataSourceManager = SharedDataSourceManagerImpl(this)
         mongoDbManager = MongoDbManagerImpl(this)
-
     }
 
     override fun onDisable() {
