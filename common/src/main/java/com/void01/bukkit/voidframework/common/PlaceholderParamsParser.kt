@@ -7,36 +7,26 @@ object PlaceholderParamsParser {
         var escape = false
 
         paramsString.forEach {
-            when (it) {
-                '\\' -> {
-                    if (escape) {
-                        param += "\\"
-                        escape = false
-                    } else {
+            if (escape) {
+                param += it
+                escape = false
+            } else {
+                when (it) {
+                    '\\' -> {
                         escape = true
                     }
-                }
-                '_' -> {
-                    if (escape) {
-                        param += "_"
-                        escape = false
-                    } else {
+                    '_' -> {
                         result.add(param)
                         param = ""
                     }
-                }
-                else -> {
-                    if (escape) {
-                        escape = false
+                    else -> {
+                        param += it
                     }
-
-                    param += it
                 }
             }
         }
 
         result.add(param)
-
         return result
     }
 }

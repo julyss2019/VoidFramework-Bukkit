@@ -5,7 +5,9 @@ import com.github.julyss2019.bukkit.voidframework.internal.LegacyVoidFrameworkPl
 import com.github.julyss2019.bukkit.voidframework.logging.Level;
 import com.github.julyss2019.bukkit.voidframework.logging.MessageContext;
 import com.github.julyss2019.bukkit.voidframework.logging.logger.appender.Appender;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import org.bukkit.plugin.Plugin;
 
 import java.io.PrintWriter;
@@ -13,7 +15,12 @@ import java.io.StringWriter;
 import java.util.*;
 
 public class Logger {
+    @Getter
+    @Setter
+    @NonNull
+    private Level threshold = Level.DEBUG;
     private final LegacyVoidFrameworkPlugin plugin;
+    @Getter
     private final Plugin holder;
     private final List<Appender> appenders = new ArrayList<>();
 
@@ -33,7 +40,6 @@ public class Logger {
 
     /**
      * 获取所有追加器
-     *
      */
     public List<Appender> getAppenders() {
         return Collections.unmodifiableList(appenders);
@@ -61,7 +67,7 @@ public class Logger {
         PrintWriter printWriter = new PrintWriter(stringWriter);
 
         throwable.printStackTrace(printWriter);
-        log0(Level.ERROR, stringWriter.toString());
+        log(Level.ERROR, stringWriter.toString());
     }
 
     /**
@@ -110,22 +116,13 @@ public class Logger {
     public void log(@NonNull Level level, @NonNull String msg, Object... args) {
         Validator.checkNotContainsNullElement(args, "args cannot contains null");
 
-        log0(level, msg);
-    }
-
-    private void log0(Level level, String msg) {
-        for (Appender appender : appenders) {
-            if (level.getIntLevel() >= appender.getLevel().getIntLevel()) {
-                appender.append(new MessageContext(plugin, holder, level, msg));
+        // 根等级过滤
+        if (level.getIntLevel() >= threshold.getIntLevel()) {
+            for (Appender appender : appenders) {
+                if (level.getIntLevel() >= appender.getLevel().getIntLevel()) {
+                    appender.append(new MessageContext(plugin, holder, level, msg));
+                }
             }
         }
-    }
-
-    /**
-     * 获取插件
-     *
-     */
-    public Plugin getHolder() {
-        return holder;
     }
 }

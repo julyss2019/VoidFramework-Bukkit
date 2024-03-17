@@ -2,8 +2,8 @@ plugins {
     id 'maven-publish'
 }
 
-tasks.named('build') {
-    dependsOn publishToMavenLocal
+dependencies {
+    compileOnly project(':api-legacy')
 }
 
 publishing {

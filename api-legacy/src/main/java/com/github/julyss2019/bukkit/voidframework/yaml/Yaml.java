@@ -36,7 +36,7 @@ public class Yaml extends Section {
     }
 
     /**
-     * 从插件配置文件夹中的 config.yml 中读取
+     * 从插件配置文件夹中的 logger.yml 中读取
      *
      * @param plugin 插件
      * @return Yaml 对象

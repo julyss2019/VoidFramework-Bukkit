@@ -1,8 +1,8 @@
 package com.github.julyss2019.bukkit.voidframework.command;
 
 
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalUserInputMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.UserInputMethodParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalParamDescription;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ParamDescription;
 import com.github.julyss2019.bukkit.voidframework.command.tree.CommandTree;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandBodyElement;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandElement;
@@ -60,8 +60,8 @@ public class CommandTreeToStringConverter {
 
             messages.append(" ");
 
-            for (UserInputMethodParam userInputMethodParam : commandBodyElement.getUserInputMethodParams()) {
-                messages.append(formatParam(userInputMethodParam));
+            for (ParamDescription paramDescription : commandBodyElement.getParamDescriptions()) {
+                messages.append(formatParam(paramDescription));
                 messages.append(" ");
             }
 
@@ -83,10 +83,10 @@ public class CommandTreeToStringConverter {
         return messages.toString();
     }
 
-    private static String formatParam(UserInputMethodParam param) {
+    private static String formatParam(ParamDescription param) {
         String description = param.getDescription();
 
-        if (param instanceof OptionalUserInputMethodParam) {
+        if (param instanceof OptionalParamDescription) {
             return "[" + description + "]";
         } else {
             return "<" + description + ">";

@@ -48,8 +48,6 @@ public class PatternParser {
         List<Pattern> patterns = new ArrayList<>();
         State state = State.LITERAL;
         StringBuilder literalTmp = new StringBuilder(); // 普通文字缓存
-        PatternConverter converterTmp;
-        PatternFormatter patternFormatterTmp;
 
         for (int i = 0; i < len; i++) {
             char c = patternText.charAt(i);

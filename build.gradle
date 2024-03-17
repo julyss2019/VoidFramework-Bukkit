@@ -5,7 +5,7 @@ plugins {
 }
 
 allprojects {
-    version '2.1.5'
+    version '2.1.6-alpha.2'
     group 'com.void01.bukkit'
 
     kotlin {
@@ -53,18 +53,8 @@ allprojects {
     }
 }
 
-tasks.register('publishAPILegacy', GradleBuild) {
-    tasks = [':api-legacy:clean', ':api-legacy:publish']
-}
-
-tasks.register('publishCommon', GradleBuild) {
-    tasks = [':common:clean', ':common:publish']
-}
-
-tasks.register('publishAPI', GradleBuild) {
-    tasks = [':api:clean', ':api:publish']
-}
-
-tasks.register('buildCore', GradleBuild) {
-    tasks = [':core:clean', ':core:shadowJar']
+subprojects {
+    getProject().tasks.named('build') {
+        dependsOn publishToMavenLocal
+    }
 }

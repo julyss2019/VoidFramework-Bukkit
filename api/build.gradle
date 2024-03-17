@@ -3,11 +3,8 @@ plugins {
 }
 
 dependencies {
+    compileOnly project(':api-legacy')
     compileOnly project(':common')
-}
-
-tasks.named('build') {
-    dependsOn publishToMavenLocal
 }
 
 publishing {

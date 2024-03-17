@@ -6,7 +6,9 @@ import com.void01.bukkit.voidframework.api.common.library.IsolatedClassLoader
 import com.void01.bukkit.voidframework.api.common.library.Library
 import com.void01.bukkit.voidframework.api.common.library.Repository
 import com.void01.bukkit.voidframework.core.VoidFrameworkPlugin
+import com.void01.bukkit.voidframework.core.library.DependencyFileHelper
 import java.io.File
+import java.net.URLClassLoader
 import java.util.Properties
 
 class GroovyManagerImpl(plugin: VoidFrameworkPlugin) : GroovyManager {

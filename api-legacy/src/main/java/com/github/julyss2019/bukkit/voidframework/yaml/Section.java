@@ -482,7 +482,6 @@ public class Section {
         return parse(paths, path -> new HashSet<>(bukkitSection.getStringList(path)), def);
     }
 
-
     /**
      * 获取 EnumSet
      *

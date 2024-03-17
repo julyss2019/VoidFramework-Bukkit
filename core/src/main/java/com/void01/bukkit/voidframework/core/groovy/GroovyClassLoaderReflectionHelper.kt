@@ -31,4 +31,8 @@ class GroovyClassLoaderReflectionHelper(isolatedClassLoader: IsolatedClassLoader
     fun parseClass(obj: Any, file: File): Class<*> {
         return groovyClassLoaderClass.getDeclaredMethod("parseClass", File::class.java).invoke(obj, file) as Class<*>
     }
+
+    fun addClassPath(obj: Any, path: String) {
+        groovyClassLoaderClass.getDeclaredMethod("addClasspath", String::class.java).invoke(obj, path)
+    }
 }

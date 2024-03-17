@@ -2,11 +2,11 @@ package com.github.julyss2019.bukkit.voidframework.command.internal.param.user;
 
 import lombok.NonNull;
 
-public class BaseUserInputMethodParam implements UserInputMethodParam {
+public class BaseParamDescription implements ParamDescription {
     private final Class<?> type;
     private final String description;
 
-    public BaseUserInputMethodParam(@NonNull Class<?> type, @NonNull String description) {
+    public BaseParamDescription(@NonNull Class<?> type, @NonNull String description) {
         this.type = type;
         this.description = description;
     }

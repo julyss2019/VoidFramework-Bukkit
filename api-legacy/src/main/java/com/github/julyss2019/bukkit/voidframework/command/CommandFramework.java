@@ -191,11 +191,11 @@ public class CommandFramework {
             }
         }
 
+        commandGroupContexts.add(commandGroupContext);
         commandManager.adjustBukkitCommandIds();
         logger.debug("command registered: " + commandGroup);
         logger.debug("current command tree: ");
         Arrays.stream(commandManager.getRootCommandTree().getTreeAsString().split("\n")).forEach(logger::debug);
-        commandGroupContexts.add(commandGroupContext);
         return commandGroupContext;
     }
 

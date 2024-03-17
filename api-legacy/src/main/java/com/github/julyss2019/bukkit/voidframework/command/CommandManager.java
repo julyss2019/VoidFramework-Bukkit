@@ -5,10 +5,10 @@ import com.github.julyss2019.bukkit.voidframework.command.failure.CommandFailure
 import com.github.julyss2019.bukkit.voidframework.command.helper.CommandHelper;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.ContextMethodParam;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderContextMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayUserInputMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.FixedUserInputMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalUserInputMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.UserInputMethodParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayParamDescription;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.FixedParamDescription;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalParamDescription;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ParamDescription;
 import com.github.julyss2019.bukkit.voidframework.command.tree.CommandTree;
 import com.github.julyss2019.bukkit.voidframework.command.tree.RootCommandTree;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandBodyElement;
@@ -279,24 +279,24 @@ public class CommandManager {
                     }
                 }
 
-                List<UserInputMethodParam> userInputMethodParams = bodyElement.getUserInputMethodParams();
+                List<ParamDescription> paramDescriptions = bodyElement.getParamDescriptions();
 
-                for (UserInputMethodParam userInputMethodParam : userInputMethodParams) {
+                for (ParamDescription paramDescription : paramDescriptions) {
                     List<String> userInputParamsParseTmp = new ArrayList<>(); // 待解析的参数
 
                     // 固定的
-                    if (userInputMethodParam instanceof FixedUserInputMethodParam) {
+                    if (paramDescription instanceof FixedParamDescription) {
                         userInputParamsParseTmp.add(inputCommandParams[userInputParamsIndex]);
-                    } else if (userInputMethodParam instanceof OptionalUserInputMethodParam) { // 可选的
+                    } else if (paramDescription instanceof OptionalParamDescription) { // 可选的
                         if (userInputParamsIndex >= userInputParamsLength) {
                             userInputParamsParseTmp.add(null);
                         } else {
                             userInputParamsParseTmp.add(inputCommandParams[userInputParamsIndex]);
                         }
-                    } else if (userInputMethodParam instanceof ArrayUserInputMethodParam) { // 数组的
+                    } else if (paramDescription instanceof ArrayParamDescription) { // 数组的
                         userInputParamsParseTmp.addAll(Arrays.asList(inputCommandParams).subList(userInputParamsIndex, userInputParamsLength)); // 添加当前索引后的所有参数
                     } else {
-                        throw new UnsupportedOperationException("unsupported UserInputMethodParam: " + userInputMethodParam.getClass());
+                        throw new UnsupportedOperationException("unsupported UserInputMethodParam: " + paramDescription.getClass());
                     }
 
                     userInputParamsIndex++;
@@ -308,11 +308,11 @@ public class CommandManager {
                             continue;
                         }
 
-                        Class<?> paramType = userInputMethodParam.getType();
+                        Class<?> paramType = paramDescription.getType();
 
                         // 处理数组类型
-                        if (userInputMethodParam instanceof ArrayUserInputMethodParam) {
-                            paramType = ((ArrayUserInputMethodParam) userInputMethodParam).getActualType();
+                        if (paramDescription instanceof ArrayParamDescription) {
+                            paramType = ((ArrayParamDescription) paramDescription).getActualType();
                         }
 
                         ParamParser paramParser = commandFramework.getParamParser(paramType);
@@ -374,48 +374,35 @@ public class CommandManager {
      * @param commandLineArray 命令行数组
      */
     public List<String> completeTab(@NonNull CommandSender sender, @NonNull String[] commandLineArray) {
-        int commandLineArrayLength = commandLineArray.length;
-        String lastParam = commandLineArray[commandLineArrayLength - 1]; // 末尾的参数
-        CommandTree currentTree = getClosestCommandTree(commandLineArray);
-        CommandElement element = currentTree.getElement();
-        CommandGroupContext holder = element.getHolder();
-        List<String> availableCompletions = new ArrayList<>(); // 可用的补全内容
+        int len = commandLineArray.length;
+        String lastParam = commandLineArray[len - 1];
+        CommandTree closestTree = getClosestCommandTree(commandLineArray);
+        CommandElement closedElement = closestTree.getElement();
+        CommandGroupContext closestHolder = closedElement.getHolder();
+        List<String> availableCompletions = new ArrayList<>();
 
-        // 补全 CommandParam
-        if (element instanceof CommandBodyElement) {
-            CommandBodyElement commandBodyElement = (CommandBodyElement) element;
-            int inputParamCount = commandLineArrayLength - currentTree.getLevel(); // 已输入的参数数量
+        if (closedElement instanceof CommandBodyElement) {
+            CommandBodyElement commandBodyElement = (CommandBodyElement) closedElement;
+            int inputLen = len - closestTree.getLevel(); // 已输入的参数数量
 
-            if (inputParamCount > 0 && inputParamCount <= commandBodyElement.getMaxInputParamCount()) {
-                List<UserInputMethodParam> inputCommandMethodParams = commandBodyElement.getUserInputMethodParams(); // 供输入的方法参数
-                int paramIndex = Math.min(inputCommandMethodParams.size() - 1, inputParamCount - 1); // 参数索引, 考虑到 inf 取 min
-                UserInputMethodParam inputCommandMethodParam = inputCommandMethodParams.get(paramIndex);
-                Class<?> methodParamType = inputCommandMethodParam.getType();
-                ParamTabCompleter paramTabCompleter = holder.getCommandFramework().getParamTabCompleter(methodParamType);
+            if (inputLen > 0 && inputLen <= commandBodyElement.getMaxInputParamCount()) {
+                List<ParamDescription> paramDescriptions = commandBodyElement.getParamDescriptions();
+                int paramIndex = inputLen - 1;
+                ParamDescription paramDescription = paramDescriptions.get(paramIndex);
+                Class<?> paramType = paramDescription.getType();
+                ParamTabCompleter tabCompleter = closestHolder.getCommandFramework().getParamTabCompleter(paramType);
 
-                if (paramTabCompleter != null) {
-                    availableCompletions = paramTabCompleter.complete(sender, methodParamType);
+                if (tabCompleter != null) {
+                    availableCompletions = tabCompleter.complete(sender, paramType);
                 }
             }
-        } else if (element instanceof CommandMappingElement) {
-            // 补全 CommandMapping 的
-            availableCompletions = currentTree
+        } else if (closedElement instanceof CommandMappingElement) {
+            availableCompletions = closestTree
                     .getChildren()
                     .stream()
                     .map(CommandTree::getElement)
                     .map(CommandElement::getCommandId)
                     .collect(Collectors.toList());
-        } else {
-            throw new UnsupportedOperationException("unsupported element: " + element.getClass().getName());
-        }
-
-        // 默认返回玩家名
-        if (availableCompletions.isEmpty()) {
-            availableCompletions =
-                    Bukkit.getOnlinePlayers()
-                            .stream()
-                            .map(HumanEntity::getName)
-                            .collect(Collectors.toList());
         }
 
         // 末尾的参数进行前缀过滤

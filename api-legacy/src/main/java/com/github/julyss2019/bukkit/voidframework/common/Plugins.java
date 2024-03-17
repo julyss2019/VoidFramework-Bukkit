@@ -18,7 +18,7 @@ public class Plugins {
      * 保存文件资源
      *
      * @param plugin     插件
-     * @param path       源路径(e.g config.yml, mobs), 所有系统统一使用 / 作为路径分隔符
+     * @param path       源路径(e.g logger.yml, mobs), 所有系统统一使用 / 作为路径分隔符
      * @param destFolder 目标文件夹
      * @param overwrite  覆写
      */

@@ -5,10 +5,10 @@ import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandBody
 import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandParam;
 import com.github.julyss2019.bukkit.voidframework.command.CommandGroupContext;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.ContextMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayUserInputMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.FixedUserInputMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalUserInputMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.UserInputMethodParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayParamDescription;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.FixedParamDescription;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalParamDescription;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ParamDescription;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderContextMethodParam;
 import lombok.NonNull;
 import lombok.ToString;
@@ -28,7 +28,7 @@ public class CommandBodyElement extends BaseCommandElement {
     private final SenderType[] senderTypes;
     private final Object commandGroupInst;
     private final List<ContextMethodParam> contextMethodParams = new ArrayList<>();
-    private final List<UserInputMethodParam> userInputMethodParams = new ArrayList<>();
+    private final List<ParamDescription> paramDescriptions = new ArrayList<>();
     private int minInputParamCount;
     private int maxInputParamCount;
 
@@ -61,11 +61,11 @@ public class CommandBodyElement extends BaseCommandElement {
                 String description = annotation.description();
 
                 if (annotation.optional()) {
-                    userInputMethodParams.add(new OptionalUserInputMethodParam(type, description));
+                    paramDescriptions.add(new OptionalParamDescription(type, description));
                 } else if (type.isArray()) {
-                    userInputMethodParams.add(new ArrayUserInputMethodParam(type, description, type.getComponentType()));
+                    paramDescriptions.add(new ArrayParamDescription(type, description, type.getComponentType()));
                 } else {
-                    userInputMethodParams.add(new FixedUserInputMethodParam(type, description));
+                    paramDescriptions.add(new FixedParamDescription(type, description));
                 }
             } else { // 上下文参数
                 if (CommandSender.class.isAssignableFrom(type)) {
@@ -78,32 +78,32 @@ public class CommandBodyElement extends BaseCommandElement {
         // String a, String[] b
         // String a, [Optional]String a
 
-        if (userInputMethodParams.isEmpty()) {
+        if (paramDescriptions.isEmpty()) {
             // 空的直接赋 0, 避免越界
             this.minInputParamCount = 0;
             this.maxInputParamCount = 0;
-        } else if (userInputMethodParams.get(0).getType().isArray()) {
+        } else if (paramDescriptions.get(0).getType().isArray()) {
             // 首个为数组 [0, inf)
             // String[] a
             this.minInputParamCount = 0;
             this.maxInputParamCount = Integer.MAX_VALUE;
-        } else if (userInputMethodParams.get(userInputMethodParams.size() - 1).getType().isArray()) {
+        } else if (paramDescriptions.get(paramDescriptions.size() - 1).getType().isArray()) {
             // 末尾为数组 [size -1, inf)
             // String a, String[] b
-            this.minInputParamCount = userInputMethodParams.size() - 1;
+            this.minInputParamCount = paramDescriptions.size() - 1;
             this.maxInputParamCount = Integer.MAX_VALUE;
         } else {
             // String a, String b
             // String a, String b, [String] c
-            for (UserInputMethodParam userInputMethodParam : userInputMethodParams) {
-                if (userInputMethodParam instanceof FixedUserInputMethodParam) {
+            for (ParamDescription paramDescription : paramDescriptions) {
+                if (paramDescription instanceof FixedParamDescription) {
                     this.minInputParamCount++;
                 } else {
                     break;
                 }
             }
 
-            this.maxInputParamCount = userInputMethodParams.size();
+            this.maxInputParamCount = paramDescriptions.size();
         }
     }
 
@@ -111,8 +111,8 @@ public class CommandBodyElement extends BaseCommandElement {
         return Collections.unmodifiableList(contextMethodParams);
     }
 
-    public List<UserInputMethodParam> getUserInputMethodParams() {
-        return Collections.unmodifiableList(userInputMethodParams);
+    public List<ParamDescription> getParamDescriptions() {
+        return Collections.unmodifiableList(paramDescriptions);
     }
 
     /**
