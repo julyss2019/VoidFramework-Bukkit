@@ -11,7 +11,9 @@ dependencies {
     implementation project(':api')
     implementation project(':api-legacy')
 
+    compileOnly 'redis.clients:jedis:5.1.2'
     compileOnly 'com.zaxxer:HikariCP:4.0.3'
+    compileOnly 'org.mongodb:mongodb-driver-sync:4.11.1'
     // compileOnly 'me.lucko:jar-relocator:1.7'
     // compileOnly 'org.apache.groovy:groovy:4.0.14'
 }
@@ -27,8 +29,10 @@ shadowJar {
     archiveBaseName.set(rootProject.name)
     archiveClassifier.set('')
 
-    relocate('com.zaxxer.hikari', 'com.zaxxer.hikari.v4_0_3')
-    relocate('kotlin', 'kotlin.v1_9_20')
+    relocate('com.zaxxer.hikari', 'vf.com.zaxxer.hikari')
+    relocate('kotlin', 'vf.kotlin')
+    relocate('com.mongodb', 'vf.com.mongodb')
+    relocate('org.bson', 'vf.org.bson')
 }
 
 tasks.named('build') {

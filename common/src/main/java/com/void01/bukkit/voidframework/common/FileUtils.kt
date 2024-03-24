@@ -79,4 +79,8 @@ object FileUtils {
 
         Files.copy(input, file.toPath(), StandardCopyOption.REPLACE_EXISTING)
     }
+
+    fun getRelativePath(file: File, parent: File): String {
+        return file.absolutePath.substring(parent.absolutePath.length).replace("\\", "/")
+    }
 }

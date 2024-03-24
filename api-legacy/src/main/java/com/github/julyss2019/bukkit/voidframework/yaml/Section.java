@@ -9,6 +9,7 @@ import com.github.julyss2019.bukkit.voidframework.yaml.serializable.internal.Ite
 import com.github.julyss2019.bukkit.voidframework.yaml.serializable.internal.ShortSerializable;
 import lombok.NonNull;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -33,6 +34,10 @@ public class Section {
     protected Section(@NonNull ConfigurationSection bukkitSection) {
         this.bukkitSection = bukkitSection;
         this.currentPath = bukkitSection.getCurrentPath();
+    }
+
+    public static Section getEmptySection() {
+        return new Section(new MemoryConfiguration());
     }
 
     /**

@@ -5,6 +5,8 @@ import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSo
 import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager
 import com.void01.bukkit.voidframework.api.common.mongodb.MongoDbManager
+import com.void01.bukkit.voidframework.api.common.redis.RedisManager
+import com.void01.bukkit.voidframework.api.common.script.ScriptManager
 
 interface Context {
     val libraryManager: LibraryManager
@@ -12,4 +14,6 @@ interface Context {
     val groovyManager: GroovyManager
     val sharedDataSourceManager: SharedDataSourceManager
     val mongoDbManager: MongoDbManager
+    val redisManager: RedisManager
+    val scriptManager: ScriptManager
 }

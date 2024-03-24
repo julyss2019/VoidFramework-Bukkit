@@ -3,11 +3,7 @@ package com.github.julyss2019.bukkit.voidframework.internal;
 import com.github.julyss2019.bukkit.voidframework.VoidFramework;
 import com.github.julyss2019.bukkit.voidframework.command.CommandFramework;
 import com.github.julyss2019.bukkit.voidframework.command.CommandManager;
-import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandMapping;
 import com.github.julyss2019.bukkit.voidframework.common.Plugins;
-import com.github.julyss2019.bukkit.voidframework.internal.command.DemoACommandGroup;
-import com.github.julyss2019.bukkit.voidframework.internal.command.DemoCommandGroup;
-import com.github.julyss2019.bukkit.voidframework.internal.command.PluginCommandGroup;
 import com.github.julyss2019.bukkit.voidframework.internal.listener.PluginUnregisterListener;
 import com.github.julyss2019.bukkit.voidframework.internal.task.ConsoleAppenderFlushTask;
 import com.github.julyss2019.bukkit.voidframework.internal.task.LoggerDailyFileAppenderAutoFlushTask;
@@ -27,7 +23,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.io.File;
 import java.util.Locale;
-
 
 public class LegacyVoidFrameworkPlugin {
     private static Plugin plugin;
@@ -57,8 +52,6 @@ public class LegacyVoidFrameworkPlugin {
 
         VoidFramework.setCommandManager(commandManager);
         VoidFramework.setLogManager(logManager);
-
-        commandFramework.registerCommandGroup(new PluginCommandGroup(this));
 
         Bukkit.getPluginManager().registerEvents(new PluginUnregisterListener(this), plugin);
         Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");

@@ -1,12 +1,15 @@
 locale: 'zh_CN'
-shared-data-sources: {}
-#mongodb-clients:
-#  common:
-#    url: 'mongodb://localhost:27017'
+#shared-data-sources:
 #  common:
 #    type: hikari
-#    config:
+#    properties:
 #      jdbcUrl: 'jdbc:mysql://localhost:3306/test?useSSL=false'
 #      username: 'root'
 #      password: '123456'
 #      maximumPoolSize: 5
+# mongodb-clients:
+#  common:
+#    url: 'mongodb://localhost:27017'
+#redis-clients:
+#  common:
+#    url: 'redis://localhost:6379'

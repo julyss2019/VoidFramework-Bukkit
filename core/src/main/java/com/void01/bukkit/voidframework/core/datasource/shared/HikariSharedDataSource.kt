@@ -12,7 +12,7 @@ import java.util.logging.Logger
 class HikariSharedDataSource : SharedDataSource {
     private lateinit var hikariDataSource: HikariDataSource
 
-    override fun loadConfig(section: ConfigurationSection) {
+    override fun loadProperties(section: ConfigurationSection) {
         val properties = Properties()
 
         section.getKeys(false).forEach {

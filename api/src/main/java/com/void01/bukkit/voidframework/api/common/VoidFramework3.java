@@ -4,6 +4,8 @@ import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSo
 import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager;
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager;
 import com.void01.bukkit.voidframework.api.common.mongodb.MongoDbManager;
+import com.void01.bukkit.voidframework.api.common.redis.RedisManager;
+import com.void01.bukkit.voidframework.api.common.script.ScriptManager;
 import com.void01.bukkit.voidframework.api.internal.Context;
 
 public class VoidFramework3 {
@@ -31,5 +33,13 @@ public class VoidFramework3 {
 
     public static MongoDbManager getMongoDbManager() {
         return context.getMongoDbManager();
+    }
+
+    public static RedisManager getRedisManager() {
+        return context.getRedisManager();
+    }
+
+    public static ScriptManager getScriptManager() {
+        return context.getScriptManager();
     }
 }

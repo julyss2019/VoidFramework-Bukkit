@@ -20,12 +20,15 @@ class SharedDataSourceManagerImpl(private val plugin: VoidFrameworkPlugin) : Sha
         val dataSourcesSection = yaml.getSection("shared-data-sources", DefaultValue.of(null))
 
         dataSourcesSection?.subSections?.forEach {
-            dataSourceMap[it.name] = getTypeClassOrThrow(it.getString("type")).newInstance().apply {
-                loadConfig(it.getSection("config").bukkitSection)
-            }
+            dataSourceMap[it.name] = getTypeClassOrThrow(it.getString("type")).newInstance()
+                .apply {
+                    val section = if (it.contains("config")) it.getSection("config") else it.getSection("properties")
+
+                    loadProperties(section.bukkitSection)
+                }
         }
 
-        plugin.voidLogger.info("载入了 ${dataSourceMap.size} 个共享连接池.")
+        plugin.pluginLogger.info("载入了 ${dataSourceMap.size} 个共享连接池.")
     }
 
     fun reload() {
@@ -44,7 +47,7 @@ class SharedDataSourceManagerImpl(private val plugin: VoidFrameworkPlugin) : Sha
         return typeClassMap[type]
     }
 
-    fun getTypeClassOrThrow(type: String) :Class<out SharedDataSource> {
+    fun getTypeClassOrThrow(type: String): Class<out SharedDataSource> {
         return getTypeClass(type) ?: throw RuntimeException("Unable to find type: $type")
     }
 

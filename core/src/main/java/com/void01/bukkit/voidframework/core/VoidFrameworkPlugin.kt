@@ -1,5 +1,6 @@
 package com.void01.bukkit.voidframework.core
 
+import com.github.julyss2019.bukkit.voidframework.VoidFramework
 import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandMapping
 import com.github.julyss2019.bukkit.voidframework.internal.LegacyVoidFrameworkPlugin
 import com.github.julyss2019.bukkit.voidframework.logging.logger.Logger
@@ -8,22 +9,29 @@ import com.void01.bukkit.voidframework.api.common.VoidFramework2
 import com.void01.bukkit.voidframework.api.common.VoidFramework3
 import com.void01.bukkit.voidframework.api.common.datasource.DataSourceManager
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSourceManager
+import com.void01.bukkit.voidframework.api.common.extension.VoidPlugin
 import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager
 import com.void01.bukkit.voidframework.api.common.library.DependencyLoader
 import com.void01.bukkit.voidframework.api.common.library.IsolatedClassLoader
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager
 import com.void01.bukkit.voidframework.api.common.library.relocation.Relocation
 import com.void01.bukkit.voidframework.api.common.mongodb.MongoDbManager
+import com.void01.bukkit.voidframework.api.common.redis.RedisManager
+import com.void01.bukkit.voidframework.api.common.script.ScriptManager
 import com.void01.bukkit.voidframework.api.internal.Context
 import com.void01.bukkit.voidframework.core.datasource.DataSourceManagerImpl
 import com.void01.bukkit.voidframework.core.datasource.shared.SharedDataSourceManagerImpl
 import com.void01.bukkit.voidframework.core.groovy.GroovyManagerImpl
+import com.void01.bukkit.voidframework.core.internal.MainCommandGroup
 import com.void01.bukkit.voidframework.core.library.LibraryManagerImpl
 import com.void01.bukkit.voidframework.core.mongodb.MongoDbManagerImpl
+import com.void01.bukkit.voidframework.core.redis.RedisManagerImpl
+import com.void01.bukkit.voidframework.core.script.ScriptManagerImpl
 import org.bukkit.plugin.java.JavaPlugin
+import java.io.File
 
 @CommandMapping(value = "void-framework", permission = "void-framework.admin")
-class VoidFrameworkPlugin : JavaPlugin(), Context {
+class VoidFrameworkPlugin : VoidPlugin(), Context {
     private var legacy: LegacyVoidFrameworkPlugin? = null
     override var libraryManager: LibraryManager
         private set
@@ -35,10 +43,12 @@ class VoidFrameworkPlugin : JavaPlugin(), Context {
         private set
     override lateinit var dataSourceManager: DataSourceManager
         private set
-    lateinit var voidLogger: Logger
+    override lateinit var redisManager: RedisManager
+        private set
+    override lateinit var scriptManager: ScriptManager
         private set
 
-    // 提前加载
+
     init {
         libraryManager = LibraryManagerImpl(this)
 
@@ -51,44 +61,62 @@ class VoidFrameworkPlugin : JavaPlugin(), Context {
     private fun loadDependencies() {
         val dependencyLoader = DependencyLoader(libraryManager)
 
+        // Kotlin
         dependencyLoader.load(
-            "org.jetbrains.kotlin:kotlin-stdlib:1.9.20",
-            Relocation.createShadowSafely("_kotlin_", "_kotlin.v1_9_20_")
+            "org.jetbrains.kotlin:kotlin-stdlib:1.9.20", Relocation.createShadowSafely("_kotlin_", "_kotlin.v1_9_20_")
         )
         dependencyLoader.load(
-            "com.zaxxer:HikariCP:4.0.3",
-            Relocation.createShadowSafely("_com.zaxxer.hikari_", "_com.zaxxer.hikari.v4_0_3_")
+            "org.jetbrains.kotlin:kotlin-stdlib:1.9.20", Relocation.createShadowSafely("_kotlin_", "_vf.kotlin_")
         )
+        // HikariCP
+        dependencyLoader.load(
+            "com.zaxxer:HikariCP:4.0.3", Relocation.createShadowSafely("_com.zaxxer.hikari_", "_vf.com.zaxxer.hikari_")
+        )
+        // MongoDB
         dependencyLoader.load(
             "org.mongodb:mongodb-driver-sync:4.11.1",
-            Relocation.createShadowSafely("_com.mongodb_", "_com.mongodb.v4_11_1_"),
-            Relocation.createShadowSafely("_org.bson_", "_org.bson.v4_11_1_"),
+            Relocation.createShadowSafely("_com.mongodb_", "_vf.com.mongodb_"),
+            Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
         )
         dependencyLoader.load(
             "org.mongodb:bson:4.11.1",
-            Relocation.createShadowSafely("_org.bson_", "_org.bson.v4_11_1_"),
+            Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
         )
         dependencyLoader.load(
             "org.mongodb:mongodb-driver-core:4.11.1",
-            Relocation.createShadowSafely("_com.mongodb_", "_com.mongodb.v4_11_1_"),
-            Relocation.createShadowSafely("_org.bson_", "_org.bson.v4_11_1_"),
+            Relocation.createShadowSafely("_com.mongodb_", "_vf.com.mongodb_"),
+            Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
         )
-
+        // Redis
+        dependencyLoader.load("redis.clients:jedis:5.1.2", Relocation.createShadowSafely("_redis_", "_vf.redis_"))
     }
 
-    override fun onEnable() {
+    override fun onPluginEnable() {
         legacy = LegacyVoidFrameworkPlugin(this)
         legacy!!.onEnable()
-        voidLogger = legacy!!.pluginLogger
 
         dataSourceManager = DataSourceManagerImpl()
         groovyManager = GroovyManagerImpl(this)
         sharedDataSourceManager = SharedDataSourceManagerImpl(this)
         mongoDbManager = MongoDbManagerImpl(this)
+        redisManager = RedisManagerImpl(this)
+
+        VoidFramework.getCommandManager().createCommandFramework(this).apply {
+            registerCommandGroup(MainCommandGroup(this@VoidFrameworkPlugin))
+        }
     }
 
-    override fun onDisable() {
+    override fun onPluginDisable() {
         legacy!!.onDisable()
         (mongoDbManager as MongoDbManagerImpl).closeAll()
+    }
+
+    fun reload() {
+        legacy!!.reload()
+        (scriptManager as ScriptManagerImpl).reload()
+    }
+
+    fun getScriptsDir(): File {
+        return File(dataFolder, "scripts")
     }
 }
