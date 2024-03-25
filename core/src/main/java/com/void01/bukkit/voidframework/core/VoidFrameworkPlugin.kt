@@ -3,7 +3,6 @@ package com.void01.bukkit.voidframework.core
 import com.github.julyss2019.bukkit.voidframework.VoidFramework
 import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandMapping
 import com.github.julyss2019.bukkit.voidframework.internal.LegacyVoidFrameworkPlugin
-import com.github.julyss2019.bukkit.voidframework.logging.logger.Logger
 import com.void01.bukkit.voidframework.api.common.JavaVoidFramework2
 import com.void01.bukkit.voidframework.api.common.VoidFramework2
 import com.void01.bukkit.voidframework.api.common.VoidFramework3
@@ -12,7 +11,6 @@ import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSo
 import com.void01.bukkit.voidframework.api.common.extension.VoidPlugin
 import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager
 import com.void01.bukkit.voidframework.api.common.library.DependencyLoader
-import com.void01.bukkit.voidframework.api.common.library.IsolatedClassLoader
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager
 import com.void01.bukkit.voidframework.api.common.library.relocation.Relocation
 import com.void01.bukkit.voidframework.api.common.mongodb.MongoDbManager
@@ -27,11 +25,19 @@ import com.void01.bukkit.voidframework.core.library.LibraryManagerImpl
 import com.void01.bukkit.voidframework.core.mongodb.MongoDbManagerImpl
 import com.void01.bukkit.voidframework.core.redis.RedisManagerImpl
 import com.void01.bukkit.voidframework.core.script.ScriptManagerImpl
-import org.bukkit.plugin.java.JavaPlugin
-import java.io.File
+import java.nio.file.Path
 
 @CommandMapping(value = "void-framework", permission = "void-framework.admin")
 class VoidFrameworkPlugin : VoidPlugin(), Context {
+    val scriptsPath: Path
+        get() {
+            return dataFolder.toPath().resolve("scripts")
+        }
+    val scriptLibsPath: Path
+        get() {
+            return dataFolder.toPath().resolve("script-libs")
+        }
+
     private var legacy: LegacyVoidFrameworkPlugin? = null
     override var libraryManager: LibraryManager
         private set
@@ -100,6 +106,7 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
         sharedDataSourceManager = SharedDataSourceManagerImpl(this)
         mongoDbManager = MongoDbManagerImpl(this)
         redisManager = RedisManagerImpl(this)
+        scriptManager = ScriptManagerImpl(this)
 
         VoidFramework.getCommandManager().createCommandFramework(this).apply {
             registerCommandGroup(MainCommandGroup(this@VoidFrameworkPlugin))
@@ -114,9 +121,5 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
     fun reload() {
         legacy!!.reload()
         (scriptManager as ScriptManagerImpl).reload()
-    }
-
-    fun getScriptsDir(): File {
-        return File(dataFolder, "scripts")
     }
 }

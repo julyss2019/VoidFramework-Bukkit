@@ -8,6 +8,7 @@ import com.void01.bukkit.voidframework.core.VoidFrameworkPlugin
 import redis.clients.jedis.Jedis
 
 class RedisManagerImpl(plugin: VoidFrameworkPlugin) : RedisManager {
+    private val logger = plugin.pluginLogger
     private val jedisClientMap = mutableMapOf<String, Jedis>()
 
     init {
@@ -25,14 +26,17 @@ class RedisManagerImpl(plugin: VoidFrameworkPlugin) : RedisManager {
             }
         }
 
-        plugin.pluginLogger.info("载入了 ${jedisClientMap.size} 个共享 Redis 客户端.")
+        logger.info("载入了 ${jedisClientMap.size} 个共享 Redis 客户端: ")
+        jedisClientMap.keys.forEach {
+            logger.info(it)
+        }
     }
 
-    override fun getSharedRedisClientOrNull(id: String): Any? {
+    override fun getSharedClientOrNull(id: String): Any? {
         return jedisClientMap[id]
     }
 
-    override fun getSharedRedisClient(id: String): Any {
-        return getSharedRedisClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared redis client by id: $id")
+    override fun getSharedClient(id: String): Any {
+        return getSharedClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared redis client by id: $id")
     }
 }

@@ -7,21 +7,35 @@ import java.net.URL
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
+import kotlin.io.path.exists
+import kotlin.streams.toList
 
 
 object FileUtils {
-    private val DEFAULT_USER_AGENT =
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.69"
+    /**
+     * 递归获取文件
+     *
+     * @param dir 文件夹
+     * @param suffixFilter 后缀名规律器
+     */
+    fun listFiles(dir: Path, suffixFilter: String = ""): List<Path> {
+        if (!dir.exists()) {
+            return emptyList()
+        }
 
-    fun downloadFromUrlOnlyResponseCodeIs200(
-        urlStr: String,
-        dest: File,
-        overwrite: Boolean,
-        userAgent: String = DEFAULT_USER_AGENT
-    ) {
-
+        return Files.walk(dir).use { walk ->
+            walk
+                .filter {
+                    Files.isRegularFile(it)
+                }
+                .filter {
+                    it.toString().endsWith(suffixFilter)
+                }
+                .toList()
+        }
     }
 
     /**

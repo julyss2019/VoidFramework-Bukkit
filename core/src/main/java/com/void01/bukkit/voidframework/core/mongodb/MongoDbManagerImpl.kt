@@ -9,6 +9,7 @@ import com.void01.bukkit.voidframework.api.common.mongodb.MongoDbManager
 import com.void01.bukkit.voidframework.core.VoidFrameworkPlugin
 
 class MongoDbManagerImpl(plugin: VoidFrameworkPlugin) : MongoDbManager {
+    private val logger = plugin.pluginLogger
     private var mongoDbClientMap = mutableMapOf<String, MongoClient>()
 
     init {
@@ -28,15 +29,29 @@ class MongoDbManagerImpl(plugin: VoidFrameworkPlugin) : MongoDbManager {
             }
         }
 
-        plugin.pluginLogger.info("载入了 ${mongoDbClientMap.size} 个共享 MongoDB 客户端.")
+        logger.info("载入了 ${mongoDbClientMap.size} 个共享 MongoDB 客户端.")
+        mongoDbClientMap.keys.forEach {
+            logger.info("- $it")
+        }
     }
 
-    override fun getSharedMongoDbClientOrNull(id: String): Any? {
+
+    override fun getSharedClientOrNull(id: String): Any? {
         return mongoDbClientMap[id]
     }
 
+    override fun getSharedClient(id: String): Any {
+        return getSharedClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared MongoDB client by id: $id")
+    }
+
+    @Deprecated("弃用")
+    override fun getSharedMongoDbClientOrNull(id: String): Any? {
+        return getSharedClientOrNull(id)
+    }
+
+    @Deprecated("弃用")
     override fun getSharedMongoDbClient(id: String): Any {
-        return getSharedMongoDbClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared MongoDB client by id: $id")
+        return getSharedClient(id)
     }
 
     fun closeAll() {

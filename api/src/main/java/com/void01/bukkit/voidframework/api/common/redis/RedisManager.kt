@@ -1,7 +1,7 @@
 package com.void01.bukkit.voidframework.api.common.redis
 
 interface RedisManager {
-    fun getSharedRedisClientOrNull(id: String): Any?
+    fun getSharedClientOrNull(id: String): Any?
 
-    fun getSharedRedisClient(id: String): Any
+    fun getSharedClient(id: String): Any
 }
