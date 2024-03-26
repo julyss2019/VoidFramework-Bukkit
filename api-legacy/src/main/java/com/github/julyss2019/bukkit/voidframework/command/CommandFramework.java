@@ -71,7 +71,7 @@ public class CommandFramework {
     public ParamParser getParamParser(@NonNull Class<?> type) {
         for (ParamParser paramParser : paramParsers) {
             for (Class<?> supportedParamType : paramParser.getSupportedParamTypes()) {
-                if (supportedParamType.isAssignableFrom(type)) {
+                if (supportedParamType.equals(type)) {
                     return paramParser;
                 }
             }
@@ -92,6 +92,7 @@ public class CommandFramework {
         addParamParser(new StringParamParser());
         addParamParser(new BooleanParamParser());
         addParamParser(new LongParamParser());
+        addParamParser(new OfflinePlayerParamParser());
     }
 
     public void addParamTabCompleter(@NonNull ParamTabCompleter paramTabCompleter) {
@@ -140,9 +141,10 @@ public class CommandFramework {
 
     /**
      * 处理命令命令映射元素
-     * @param currentTree 当前命令树
+     *
+     * @param currentTree         当前命令树
      * @param commandGroupContext 命令持有者
-     * @param commandMapping 命令映射注解
+     * @param commandMapping      命令映射注解
      * @return 解析过的命令映射元素
      */
     private CommandTree solveCommandMappingElement(CommandTree currentTree, CommandGroupContext commandGroupContext, CommandMapping commandMapping) {
