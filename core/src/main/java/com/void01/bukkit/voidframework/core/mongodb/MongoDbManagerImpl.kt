@@ -44,12 +44,12 @@ class MongoDbManagerImpl(plugin: VoidFrameworkPlugin) : MongoDbManager {
         return getSharedClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared MongoDB client by id: $id")
     }
 
-    @Deprecated("弃用")
+    @Deprecated("弃用", ReplaceWith("getSharedClientOrNull(id)"))
     override fun getSharedMongoDbClientOrNull(id: String): Any? {
         return getSharedClientOrNull(id)
     }
 
-    @Deprecated("弃用")
+    @Deprecated("弃用", ReplaceWith("getSharedClient(id)"))
     override fun getSharedMongoDbClient(id: String): Any {
         return getSharedClient(id)
     }
