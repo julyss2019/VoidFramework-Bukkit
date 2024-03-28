@@ -394,6 +394,12 @@ public class CommandManager {
 
                 if (tabCompleter != null) {
                     availableCompletions = tabCompleter.complete(sender, paramType);
+                } else {
+                    // 没有补全器
+                    availableCompletions = Bukkit.getOnlinePlayers()
+                            .stream()
+                            .map(HumanEntity::getName)
+                            .collect(Collectors.toList());
                 }
             }
         } else if (closedElement instanceof CommandMappingElement) {
