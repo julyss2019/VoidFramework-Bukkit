@@ -1,5 +1,7 @@
 package com.void01.bukkit.voidframework.common
 
+import java.util.concurrent.TimeUnit
+
 class StopWatch {
     companion object {
         fun createAndStart(): StopWatch {
@@ -19,11 +21,16 @@ class StopWatch {
         start = System.currentTimeMillis()
     }
 
+    @Deprecated(message = "弃用", replaceWith = ReplaceWith("elapsed(timeUnit)"))
     fun stop(): Long {
+        return getElapsed(TimeUnit.MILLISECONDS)
+    }
+
+    fun getElapsed(timeUnit: TimeUnit): Long {
         require(start != -1L) {
             "Not yet started"
         }
 
-        return System.currentTimeMillis() - start
+        return TimeUnit.MILLISECONDS.convert(System.currentTimeMillis() - start, timeUnit)
     }
 }

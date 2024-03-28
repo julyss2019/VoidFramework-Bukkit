@@ -14,7 +14,7 @@ import com.void01.bukkit.voidframework.api.common.library.DependencyLoader
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager
 import com.void01.bukkit.voidframework.api.common.library.relocation.Relocation
 import com.void01.bukkit.voidframework.api.common.mongodb.MongoDbManager
-import com.void01.bukkit.voidframework.api.common.redis.RedisManager
+import com.void01.bukkit.voidframework.api.common.redission.RedissonManager
 import com.void01.bukkit.voidframework.api.common.script.ScriptManager
 import com.void01.bukkit.voidframework.api.internal.Context
 import com.void01.bukkit.voidframework.core.datasource.DataSourceManagerImpl
@@ -23,7 +23,7 @@ import com.void01.bukkit.voidframework.core.groovy.GroovyManagerImpl
 import com.void01.bukkit.voidframework.core.internal.MainCommandGroup
 import com.void01.bukkit.voidframework.core.library.LibraryManagerImpl
 import com.void01.bukkit.voidframework.core.mongodb.MongoDbManagerImpl
-import com.void01.bukkit.voidframework.core.redis.RedisManagerImpl
+import com.void01.bukkit.voidframework.core.redis.RedissonManagerImpl
 import com.void01.bukkit.voidframework.core.script.ScriptManagerImpl
 import java.nio.file.Path
 
@@ -49,7 +49,7 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
         private set
     override lateinit var dataSourceManager: DataSourceManager
         private set
-    override lateinit var redisManager: RedisManager
+    override lateinit var redissonManager: RedissonManager
         private set
     override lateinit var scriptManager: ScriptManager
         private set
@@ -93,8 +93,8 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
             Relocation.createShadowSafely("_com.mongodb_", "_vf.com.mongodb_"),
             Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
         )
-        // Redis
-        dependencyLoader.load("redis.clients:jedis:5.1.2", Relocation.createShadowSafely("_redis_", "_vf.redis_"))
+        // Redisson
+        dependencyLoader.load("org.redisson:redisson:3.27.2", Relocation.createShadowSafely("_org.redisson_", "_vf.org.redisson_"))
     }
 
     override fun onPluginEnable() {
@@ -105,7 +105,7 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
         groovyManager = GroovyManagerImpl(this)
         sharedDataSourceManager = SharedDataSourceManagerImpl(this)
         mongoDbManager = MongoDbManagerImpl(this)
-        redisManager = RedisManagerImpl(this)
+        redissonManager = RedissonManagerImpl(this)
         scriptManager = ScriptManagerImpl(this)
 
         VoidFramework.getCommandManager().createCommandFramework(this).apply {

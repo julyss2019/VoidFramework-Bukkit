@@ -3,13 +3,15 @@ package com.void01.bukkit.voidframework.core.redis
 import com.github.julyss2019.bukkit.voidframework.yaml.DefaultValue
 import com.github.julyss2019.bukkit.voidframework.yaml.Section
 import com.github.julyss2019.bukkit.voidframework.yaml.Yaml
-import com.void01.bukkit.voidframework.api.common.redis.RedisManager
+import com.void01.bukkit.voidframework.api.common.redission.RedissonManager
 import com.void01.bukkit.voidframework.core.VoidFrameworkPlugin
-import redis.clients.jedis.Jedis
+import org.redisson.Redisson
+import org.redisson.api.RedissonClient
+import org.redisson.config.Config
 
-class RedisManagerImpl(plugin: VoidFrameworkPlugin) : RedisManager {
+class RedissonManagerImpl(plugin: VoidFrameworkPlugin) : RedissonManager {
     private val logger = plugin.pluginLogger
-    private val jedisClientMap = mutableMapOf<String, Jedis>()
+    private val jedisClientMap = mutableMapOf<String, RedissonClient>()
 
     init {
         val yaml = Yaml.fromPluginConfigFile(plugin)
@@ -17,16 +19,21 @@ class RedisManagerImpl(plugin: VoidFrameworkPlugin) : RedisManager {
 
         clientsSection?.subSections?.forEach {
             try {
-                val clientInst = Jedis(it.getString("url"))
+                val config = Config()
 
-                clientInst.connect()
+                config.useSingleServer().apply {
+                    address = it.getString("url")
+                }
+
+                val clientInst = Redisson.create(config)
+
                 jedisClientMap[it.name] = clientInst
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
         }
 
-        logger.info("载入了 ${jedisClientMap.size} 个共享 Redis 客户端: ")
+        logger.info("载入了 ${jedisClientMap.size} 个共享 Redisson 客户端: ")
         jedisClientMap.keys.forEach {
             logger.info(it)
         }
@@ -37,6 +44,6 @@ class RedisManagerImpl(plugin: VoidFrameworkPlugin) : RedisManager {
     }
 
     override fun getSharedClient(id: String): Any {
-        return getSharedClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared redis client by id: $id")
+        return getSharedClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared Redisson client by id: $id")
     }
 }

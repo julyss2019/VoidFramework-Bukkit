@@ -49,12 +49,11 @@ class ScriptManagerImpl(private val plugin: VoidFrameworkPlugin) : ScriptManager
 
         FileUtils.listFiles(scriptsPath, ".groovy").forEach {
             val relativePath = "/" + it.relativeTo(scriptsPath).toString().replace("\\", "/")
-            val scriptImpl = ScriptImpl(it, relativePath, groovyClassLoader.parseClass(it.toFile()))
 
             try {
-                scriptMap[relativePath] = scriptImpl
+                scriptMap[relativePath] = ScriptImpl(it, relativePath, groovyClassLoader.parseClass(it.toFile()))
             } catch (ex: Exception) {
-                throw RuntimeException("An exception occurred while parsing ${it.absolutePathString()}", ex)
+                logger.warn("在解析脚本 ${it.absolutePathString()} 时发生了异常\n${ex.stackTraceToString()}")
             }
 
             logger.info("已载入脚本: ${it.absolutePathString()} [${relativePath}]")
