@@ -4,7 +4,13 @@ plugins {
 
 publishing {
     publications {
-        maven(MavenPublication) {
+        mavenCurrent(MavenPublication) {
+            artifactId = 'void-framework-bukkit-api-legacy'
+            from components.java
+        }
+
+        mavenLatest(MavenPublication) {
+            version = 'latest'
             artifactId = 'void-framework-bukkit-api-legacy'
             from components.java
         }
@@ -13,7 +19,6 @@ publishing {
     repositories {
         mavenLocal()
         maven {
-            allowInsecureProtocol = true
             url = 'https://maven.void01.com/repository/bukkit-plugin/'
 
             credentials {
