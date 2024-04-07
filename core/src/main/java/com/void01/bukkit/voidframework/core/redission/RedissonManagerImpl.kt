@@ -1,4 +1,4 @@
-package com.void01.bukkit.voidframework.core.redis
+package com.void01.bukkit.voidframework.core.redission
 
 import com.github.julyss2019.bukkit.voidframework.yaml.DefaultValue
 import com.github.julyss2019.bukkit.voidframework.yaml.Section
@@ -39,11 +39,11 @@ class RedissonManagerImpl(plugin: VoidFrameworkPlugin) : RedissonManager {
         }
     }
 
-    override fun getSharedClientOrNull(id: String): Any? {
+    override fun getSharedClientOrNull(id: String): RedissonClient? {
         return jedisClientMap[id]
     }
 
-    override fun getSharedClient(id: String): Any {
-        return getSharedClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared Redisson client by id: $id")
+    override fun getSharedClient(id: String): RedissonClient {
+        return getSharedClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared RedissonClient by id: $id")
     }
 }

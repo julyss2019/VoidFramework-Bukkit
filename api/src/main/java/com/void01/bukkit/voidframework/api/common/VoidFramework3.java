@@ -35,7 +35,7 @@ public class VoidFramework3 {
         return context.getMongoDbManager();
     }
 
-    public static RedissonManager getRedisManager() {
+    public static RedissonManager getRedissonManager() {
         return context.getRedissonManager();
     }
 

@@ -8,6 +8,4 @@ interface Script {
     val clazz: Class<*>
 
     fun newInstance(): Any
-
-    fun <T> newInstance(clazz: Class<T>): T
 }

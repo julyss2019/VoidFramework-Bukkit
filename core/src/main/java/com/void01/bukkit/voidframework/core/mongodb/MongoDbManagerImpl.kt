@@ -35,13 +35,22 @@ class MongoDbManagerImpl(plugin: VoidFrameworkPlugin) : MongoDbManager {
         }
     }
 
+    @Deprecated("返回类型不明确", ReplaceWith("getSharedClient2(id)"))
+    override fun getSharedClient(id: String): Any {
+        return getSharedClient2(id)
+    }
 
+    @Deprecated("返回类型不明确", ReplaceWith("getSharedClientOrNull2(id)"))
     override fun getSharedClientOrNull(id: String): Any? {
+        return getSharedClientOrNull2(id)
+    }
+
+    override fun getSharedClientOrNull2(id: String): MongoClient? {
         return mongoDbClientMap[id]
     }
 
-    override fun getSharedClient(id: String): Any {
-        return getSharedClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared MongoDB client by id: $id")
+    override fun getSharedClient2(id: String): MongoClient {
+        return getSharedClientOrNull2(id) ?: throw IllegalArgumentException("Unable to find shared MongoDB client by id: $id")
     }
 
     @Deprecated("弃用", ReplaceWith("getSharedClientOrNull(id)"))

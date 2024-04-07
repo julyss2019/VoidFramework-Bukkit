@@ -1,7 +1,10 @@
 package com.void01.bukkit.voidframework.api.common.redission
 
-interface RedissonManager {
-    fun getSharedClientOrNull(id: String): Any?
+import org.redisson.Redisson
+import org.redisson.api.RedissonClient
 
-    fun getSharedClient(id: String): Any
+interface RedissonManager {
+    fun getSharedClientOrNull(id: String): RedissonClient?
+
+    fun getSharedClient(id: String): RedissonClient
 }

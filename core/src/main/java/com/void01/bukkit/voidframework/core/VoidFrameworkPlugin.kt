@@ -10,22 +10,26 @@ import com.void01.bukkit.voidframework.api.common.datasource.DataSourceManager
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSourceManager
 import com.void01.bukkit.voidframework.api.common.extension.VoidPlugin
 import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager
-import com.void01.bukkit.voidframework.api.common.library.DependencyLoader
+import com.void01.bukkit.voidframework.api.common.library.LibraryLoader
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager
 import com.void01.bukkit.voidframework.api.common.library.relocation.Relocation
 import com.void01.bukkit.voidframework.api.common.mongodb.MongoDbManager
 import com.void01.bukkit.voidframework.api.common.redission.RedissonManager
 import com.void01.bukkit.voidframework.api.common.script.ScriptManager
 import com.void01.bukkit.voidframework.api.internal.Context
+import com.void01.bukkit.voidframework.common.FileUtils
+import com.void01.bukkit.voidframework.common.UrlClassLoaderModifier
+import com.void01.bukkit.voidframework.common.kotlin.safeShadow
 import com.void01.bukkit.voidframework.core.datasource.DataSourceManagerImpl
 import com.void01.bukkit.voidframework.core.datasource.shared.SharedDataSourceManagerImpl
 import com.void01.bukkit.voidframework.core.groovy.GroovyManagerImpl
 import com.void01.bukkit.voidframework.core.internal.MainCommandGroup
 import com.void01.bukkit.voidframework.core.library.LibraryManagerImpl
 import com.void01.bukkit.voidframework.core.mongodb.MongoDbManagerImpl
-import com.void01.bukkit.voidframework.core.redis.RedissonManagerImpl
+import com.void01.bukkit.voidframework.core.redission.RedissonManagerImpl
 import com.void01.bukkit.voidframework.core.script.ScriptManagerImpl
 import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 
 @CommandMapping(value = "void-framework", permission = "void-framework.admin")
 class VoidFrameworkPlugin : VoidPlugin(), Context {
@@ -58,46 +62,50 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
     init {
         libraryManager = LibraryManagerImpl(this)
 
-        loadDependencies()
+        loadLibraries()
         VoidFramework3.setContext(this)
         VoidFramework2.setContext(this)
         JavaVoidFramework2.setContext(this)
     }
 
-    private fun loadDependencies() {
-        val dependencyLoader = DependencyLoader(libraryManager)
+    private fun loadLibraries() {
+        val libraryLoader = LibraryLoader(libraryManager)
 
         // Kotlin
-        dependencyLoader.load(
+        libraryLoader.load(
             "org.jetbrains.kotlin:kotlin-stdlib:1.9.20", Relocation.createShadowSafely("_kotlin_", "_kotlin.v1_9_20_")
         )
-        dependencyLoader.load(
+        libraryLoader.load(
             "org.jetbrains.kotlin:kotlin-stdlib:1.9.20", Relocation.createShadowSafely("_kotlin_", "_vf.kotlin_")
         )
         // HikariCP
-        dependencyLoader.load(
+        libraryLoader.load(
             "com.zaxxer:HikariCP:4.0.3", Relocation.createShadowSafely("_com.zaxxer.hikari_", "_vf.com.zaxxer.hikari_")
         )
         // MongoDB
-        dependencyLoader.load(
-            "org.mongodb:mongodb-driver-sync:4.11.1",
+        libraryLoader.load(
+            safeShadow("_org.mongodb:mongodb-driver-sync:4.11.1_"),
             Relocation.createShadowSafely("_com.mongodb_", "_vf.com.mongodb_"),
             Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
         )
-        dependencyLoader.load(
-            "org.mongodb:bson:4.11.1",
+        libraryLoader.load(
+            safeShadow("_org.mongodb:bson:4.11.1_"),
             Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
         )
-        dependencyLoader.load(
-            "org.mongodb:mongodb-driver-core:4.11.1",
+        libraryLoader.load(
+            safeShadow("_org.mongodb:mongodb-driver-core:4.11.1_"),
             Relocation.createShadowSafely("_com.mongodb_", "_vf.com.mongodb_"),
             Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
         )
-        // Redisson
-        dependencyLoader.load("org.redisson:redisson:3.27.2", Relocation.createShadowSafely("_org.redisson_", "_vf.org.redisson_"))
     }
 
     override fun onPluginEnable() {
+        // 本地库
+        FileUtils.listFiles(dataFolder.toPath().resolve("local-libs"), ".jar").forEach {
+            UrlClassLoaderModifier.addUrl(classLoader, it.toFile())
+            pluginLogger.info("已载入本地库: ${it.absolutePathString()}")
+        }
+
         legacy = LegacyVoidFrameworkPlugin(this)
         legacy!!.onEnable()
 

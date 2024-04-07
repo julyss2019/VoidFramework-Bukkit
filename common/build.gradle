@@ -1,7 +1,3 @@
-plugins {
-    id 'maven-publish'
-}
-
 dependencies {
     compileOnly project(':api-legacy')
 }
@@ -19,16 +15,5 @@ publishing {
             from components.java
         }
     }
-
-    repositories {
-        mavenLocal()
-        maven {
-            url = 'https://maven.void01.com/repository/bukkit-plugin/'
-
-            credentials {
-                username = project.findProperty('nexus.username')
-                password = project.findProperty('nexus.password')
-            }
-        }
-    }
 }
+

@@ -8,10 +8,6 @@ class ScriptImpl(override val path: Path, override val relativePath: String, ove
         return clazz.newInstance()
     }
 
-    override fun <T> newInstance(clazz: Class<T>): T {
-        return clazz.newInstance() as T
-    }
-
     override fun toString(): String {
         return "Script(relativePath='$relativePath', clazz=$clazz)"
     }

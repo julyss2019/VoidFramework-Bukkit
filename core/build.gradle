@@ -33,6 +33,7 @@ shadowJar {
     relocate('kotlin', 'vf.kotlin')
     relocate('com.mongodb', 'vf.com.mongodb')
     relocate('org.bson', 'vf.org.bson')
+    relocate('org.redisson', 'vf.org.redisson')
 }
 
 tasks.named('build') {

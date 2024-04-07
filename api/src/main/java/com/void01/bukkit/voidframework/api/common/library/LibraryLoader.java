@@ -9,18 +9,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class DependencyLoader {
+public class LibraryLoader {
     private final LibraryManager libraryManager;
     private final List<Repository> repositories = new ArrayList<>();
 
-    public DependencyLoader(@NonNull LibraryManager libraryManager) {
+    public LibraryLoader(@NonNull LibraryManager libraryManager) {
         this.libraryManager = libraryManager;
 
         repositories.add(Repository.ALIYUN);
         repositories.add(Repository.CENTRAL);
     }
 
-    public DependencyLoader() {
+    public LibraryLoader() {
         this(VoidFramework3.getLibraryManager());
     }
 
