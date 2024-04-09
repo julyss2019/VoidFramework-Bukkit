@@ -3,13 +3,10 @@ package com.github.julyss2019.bukkit.voidframework.common;
 import com.github.julyss2019.bukkit.voidframework.annotation.Nullable;
 import lombok.NonNull;
 
-import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Reflections {
     public static Object convertArray(@NonNull Object[] originalArray, @NonNull Class<?> targetType) {
@@ -34,7 +31,7 @@ public class Reflections {
 
     public static <T> T getEnum(@NonNull Class<T> clazz, @NonNull String name) {
         if (!clazz.isEnum()) {
-            throw new IllegalArgumentException("class is not enum");
+            throw new IllegalArgumentException(clazz.getName() + " is not a Enum");
         }
 
         for (Object enumConstant : clazz.getEnumConstants()) {

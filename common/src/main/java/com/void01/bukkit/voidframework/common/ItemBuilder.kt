@@ -65,8 +65,8 @@ class ItemBuilder {
         return this
     }
 
-    fun toRgbColored(): ItemBuilder {
-        throw UnsupportedOperationException()
+    fun colored(colored: Boolean): ItemBuilder {
+        this.colored = colored
         return this
     }
 
