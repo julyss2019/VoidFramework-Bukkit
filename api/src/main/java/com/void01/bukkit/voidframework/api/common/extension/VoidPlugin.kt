@@ -8,6 +8,7 @@ import com.void01.bukkit.voidframework.common.JarScanner2
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.io.InputStream
+import java.nio.file.Path
 
 open class VoidPlugin : JavaPlugin() {
     lateinit var pluginLogger: PluginLogger
@@ -38,5 +39,9 @@ open class VoidPlugin : JavaPlugin() {
     }
 
     open fun onPluginDisable() {
+    }
+
+    fun getDataFolderPath(): Path {
+        return dataFolder.toPath()
     }
 }

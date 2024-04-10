@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.Plugin
 import java.io.File
+import java.nio.file.Path
 
 class Yaml2(handle: ConfigurationSection) : Section2(handle) {
     companion object {
@@ -22,6 +23,11 @@ class Yaml2(handle: ConfigurationSection) : Section2(handle) {
         @JvmStatic
         fun from(handle: YamlConfiguration): Yaml2 {
             return Yaml2(handle)
+        }
+
+        @JvmStatic
+        fun from(path: Path): Yaml2 {
+            return from(path.toFile())
         }
     }
 }
