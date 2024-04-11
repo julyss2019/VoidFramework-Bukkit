@@ -50,9 +50,7 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
     fun getSectionOrNull(path: String): Section2? = getSectionOrDefault(path, null)
 
     fun getSectionOrDefault(path: String, def: Section2?): Section2? {
-        return getOrDefault(path, def) {
-            from(handle.getConfigurationSection(path))
-        }
+        return from(handle.getConfigurationSection(path) ?: return def)
     }
 
     fun getStringList(path: String): List<String> {
@@ -177,7 +175,7 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
      * @param supplier 生产者
      */
     private fun <T> getOrThrow(path: String, supplier: Supplier<T?>): T {
-        return supplier.get() ?: throw IllegalArgumentException("Unable to get value by path: $currentPath.$path")
+        return supplier.get() ?: throw IllegalArgumentException("Unable to get value by path: '$currentPath.$path'")
     }
 
     /**
