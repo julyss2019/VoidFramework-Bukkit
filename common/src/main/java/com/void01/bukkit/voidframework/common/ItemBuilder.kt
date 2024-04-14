@@ -26,7 +26,7 @@ class ItemBuilder {
         return this
     }
 
-    fun setDisplayName(displayName: String): ItemBuilder {
+    fun setDisplayName(displayName: String?): ItemBuilder {
         this.displayName = displayName
         return this
     }

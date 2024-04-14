@@ -2,7 +2,7 @@ package com.void01.bukkit.voidframework.common
 
 import java.util.concurrent.TimeUnit
 
-class Cooldown {
+class CooldownTimer {
     /**
      * 是否在冷却中
      */
@@ -17,7 +17,7 @@ class Cooldown {
     /**
      * 增加冷却时间
      */
-    fun add(cooldown: Long, timeUnit: TimeUnit) {
+    fun addCooldown(cooldown: Long, timeUnit: TimeUnit) {
         if (isFinished) {
             finishTimeMillis = System.currentTimeMillis()
         }
@@ -28,7 +28,7 @@ class Cooldown {
     /**
      * 获取冷却时间
      */
-    fun get(timeUnit: TimeUnit): Long {
+    fun getCooldown(timeUnit: TimeUnit): Long {
         if (finishTimeMillis == -1L) {
             return 0L
         }
@@ -38,11 +38,11 @@ class Cooldown {
         return timeUnit.convert(remaining, TimeUnit.MILLISECONDS)
     }
 
-    fun getSeconds(): Long {
-        return get(TimeUnit.SECONDS)
+    fun getCooldownSeconds(): Long {
+        return getCooldown(TimeUnit.SECONDS)
     }
 
-    fun getMilliseconds(): Long {
-        return get(TimeUnit.MILLISECONDS)
+    fun getCooldownMilliseconds(): Long {
+        return getCooldown(TimeUnit.MILLISECONDS)
     }
 }

@@ -163,7 +163,7 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
                 .colored(itemSection.getBooleanOrDefault("colored", false)!!)
                 .setMaterial(itemSection.getEnum("material", Material::class.java))
                 .setSubId(itemSection.getShortOrDefault("sub-id", 0)!!)
-                .setDisplayName(itemSection.getString("display-name").toColored())
+                .setDisplayName(itemSection.getStringOrDefault("display-name", null))
                 .setLores(itemSection.getStringList("lores").map { it.toColored() })
                 .build()
         }
