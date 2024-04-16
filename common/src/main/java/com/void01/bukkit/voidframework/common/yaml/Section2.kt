@@ -90,9 +90,7 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
     }
 
     fun getDouble(path: String): Double {
-        return getOrThrow(path) {
-            getDoubleOrNull(path)
-        }
+        return getOrThrow(path) { getDoubleOrNull(path) }
     }
 
     fun getDoubleOrNull(path: String): Double? = getDoubleOrDefault(path, null)
@@ -185,6 +183,10 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
      * @param supplier 生产者
      */
     private fun <T> getOrDefault(path: String, default: T?, supplier: Supplier<T?>): T? {
+        if (!handle.contains(path)) {
+            return null
+        }
+
         try {
             return supplier.get() ?: default
         } catch (ex: Exception) {
