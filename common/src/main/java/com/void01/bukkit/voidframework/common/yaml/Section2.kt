@@ -184,13 +184,13 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
      */
     private fun <T> getOrDefault(path: String, default: T?, supplier: Supplier<T?>): T? {
         if (!handle.contains(path)) {
-            return null
+            return default
         }
 
         try {
             return supplier.get() ?: default
         } catch (ex: Exception) {
-            throw RuntimeException("An exception occurred while parsing $currentPath.$path", ex)
+            throw RuntimeException("An exception occurred while parsing: '$currentPath.$path'", ex)
         }
     }
 }
