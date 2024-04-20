@@ -352,7 +352,7 @@ public class CommandManager {
 
                 // 执行方法
                 try {
-                    logger.debug("method params: %s", allParamValues);
+                    logger.debug(String.format("method params: %s", allParamValues));
                     bodyElement.invokeMethod(allParamValues.toArray());
                 } catch (Exception e) {
                     throw CommandExecutionException.newException(commandLineArray, holder, "method error", e);
