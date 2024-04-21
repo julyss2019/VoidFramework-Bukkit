@@ -2,14 +2,13 @@ package com.github.julyss2019.bukkit.voidframework.command.tree.element;
 
 import com.github.julyss2019.bukkit.voidframework.command.SenderType;
 import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandBody;
-import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandParam;
 import com.github.julyss2019.bukkit.voidframework.command.CommandGroupContext;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.ContextMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayParamDescription;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.FixedParamDescription;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalParamDescription;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ParamDescription;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderContextMethodParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayCommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.FixedCommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalCommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.CommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderSenderParam;
 import lombok.NonNull;
 import lombok.ToString;
 import org.bukkit.command.CommandSender;
@@ -27,8 +26,8 @@ public class CommandBodyElement extends BaseCommandElement {
     private final Method method;
     private final SenderType[] senderTypes;
     private final Object commandGroupInst;
-    private final List<ContextMethodParam> contextMethodParams = new ArrayList<>();
-    private final List<ParamDescription> paramDescriptions = new ArrayList<>();
+    private final List<SenderParam> senderParams = new ArrayList<>();
+    private final List<CommandParam> commandParams = new ArrayList<>();
     private int minInputParamCount;
     private int maxInputParamCount;
 
@@ -54,22 +53,22 @@ public class CommandBodyElement extends BaseCommandElement {
         // 解析参数
         for (Parameter parameter : method.getParameters()) {
             Class<?> type = parameter.getType();
-            CommandParam annotation = parameter.getAnnotation(CommandParam.class);
+            com.github.julyss2019.bukkit.voidframework.command.annotation.CommandParam annotation = parameter.getAnnotation(com.github.julyss2019.bukkit.voidframework.command.annotation.CommandParam.class);
 
             // 用户输入参数
             if (annotation != null) {
                 String description = annotation.description();
 
                 if (annotation.optional()) {
-                    paramDescriptions.add(new OptionalParamDescription(type, description));
+                    commandParams.add(new OptionalCommandParam(type, description));
                 } else if (type.isArray()) {
-                    paramDescriptions.add(new ArrayParamDescription(type, description, type.getComponentType()));
+                    commandParams.add(new ArrayCommandParam(type, description, type.getComponentType()));
                 } else {
-                    paramDescriptions.add(new FixedParamDescription(type, description));
+                    commandParams.add(new FixedCommandParam(type, description));
                 }
             } else { // 上下文参数
                 if (CommandSender.class.isAssignableFrom(type)) {
-                    contextMethodParams.add(new SenderContextMethodParam(parameter.getType()));
+                    senderParams.add(new SenderSenderParam(parameter.getType()));
                 }
             }
         }
@@ -78,41 +77,41 @@ public class CommandBodyElement extends BaseCommandElement {
         // String a, String[] b
         // String a, [Optional]String a
 
-        if (paramDescriptions.isEmpty()) {
+        if (commandParams.isEmpty()) {
             // 空的直接赋 0, 避免越界
             this.minInputParamCount = 0;
             this.maxInputParamCount = 0;
-        } else if (paramDescriptions.get(0).getType().isArray()) {
+        } else if (commandParams.get(0).getType().isArray()) {
             // 首个为数组 [0, inf)
             // String[] a
             this.minInputParamCount = 0;
             this.maxInputParamCount = Integer.MAX_VALUE;
-        } else if (paramDescriptions.get(paramDescriptions.size() - 1).getType().isArray()) {
+        } else if (commandParams.get(commandParams.size() - 1).getType().isArray()) {
             // 末尾为数组 [size -1, inf)
             // String a, String[] b
-            this.minInputParamCount = paramDescriptions.size() - 1;
+            this.minInputParamCount = commandParams.size() - 1;
             this.maxInputParamCount = Integer.MAX_VALUE;
         } else {
             // String a, String b
             // String a, String b, [String] c
-            for (ParamDescription paramDescription : paramDescriptions) {
-                if (paramDescription instanceof FixedParamDescription) {
+            for (CommandParam commandParam : commandParams) {
+                if (commandParam instanceof FixedCommandParam) {
                     this.minInputParamCount++;
                 } else {
                     break;
                 }
             }
 
-            this.maxInputParamCount = paramDescriptions.size();
+            this.maxInputParamCount = commandParams.size();
         }
     }
 
-    public List<ContextMethodParam> getContextMethodParams() {
-        return Collections.unmodifiableList(contextMethodParams);
+    public List<SenderParam> getSenderParams() {
+        return Collections.unmodifiableList(senderParams);
     }
 
-    public List<ParamDescription> getParamDescriptions() {
-        return Collections.unmodifiableList(paramDescriptions);
+    public List<CommandParam> getCommandParams() {
+        return Collections.unmodifiableList(commandParams);
     }
 
     /**

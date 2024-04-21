@@ -5,14 +5,16 @@ import com.github.julyss2019.bukkit.voidframework.command.CommandFramework;
 import com.github.julyss2019.bukkit.voidframework.command.CommandManager;
 import com.github.julyss2019.bukkit.voidframework.common.Plugins;
 import com.github.julyss2019.bukkit.voidframework.internal.listener.PluginUnregisterListener;
+import com.github.julyss2019.bukkit.voidframework.internal.logger.Level;
+import com.github.julyss2019.bukkit.voidframework.internal.logger.LegacyPluginLogger;
 import com.github.julyss2019.bukkit.voidframework.internal.task.ConsoleAppenderFlushTask;
 import com.github.julyss2019.bukkit.voidframework.internal.task.LoggerDailyFileAppenderAutoFlushTask;
 import com.github.julyss2019.bukkit.voidframework.locale.LocaleParser;
 import com.github.julyss2019.bukkit.voidframework.locale.resource.LocaleResource;
 import com.github.julyss2019.bukkit.voidframework.locale.resource.YamlLocaleResource;
 import com.github.julyss2019.bukkit.voidframework.logging.LogManager;
-import com.github.julyss2019.bukkit.voidframework.logging.logger.Logger;
 import com.github.julyss2019.bukkit.voidframework.thirdparty.VaultThirdParty;
+import com.github.julyss2019.bukkit.voidframework.yaml.DefaultValue;
 import com.github.julyss2019.bukkit.voidframework.yaml.Yaml;
 import lombok.NonNull;
 import net.milkbowl.vault.economy.Economy;
@@ -26,7 +28,7 @@ import java.util.Locale;
 
 public class LegacyVoidFrameworkPlugin {
     private static Plugin plugin;
-    private Logger pluginLogger;
+    private LegacyPluginLogger legacyPluginLogger;
     private LogManager logManager;
     private CommandManager commandManager;
     private CommandFramework commandFramework;
@@ -46,7 +48,12 @@ public class LegacyVoidFrameworkPlugin {
         setLocaleResource();
 
         this.logManager = new LogManager(this);
-        this.pluginLogger = logManager.createSimpleLogger(plugin);
+        this.legacyPluginLogger = new LegacyPluginLogger(plugin);
+
+        Yaml yaml = Yaml.fromPluginConfigFile(plugin);
+
+        legacyPluginLogger.setThreshold(yaml.getEnum("legacy-log-level", Level.class, DefaultValue.of(Level.INFO)));
+
         this.commandManager = new CommandManager(this);
         this.commandFramework = commandManager.createCommandFramework(plugin);
 
@@ -61,14 +68,12 @@ public class LegacyVoidFrameworkPlugin {
             setupVaultEconomy();
         } catch (Throwable ignored) {
         }
-
-        pluginLogger.info("插件已加载.");
     }
 
     public void onDisable() {
         HandlerList.unregisterAll(plugin);
         commandManager.unregisterAllCommandFrameworks();
-        pluginLogger.info("插件已卸载.");
+        legacyPluginLogger.info("插件已卸载.");
         logManager.unregisterAllLoggers();
     }
 
@@ -111,8 +116,8 @@ public class LegacyVoidFrameworkPlugin {
         return consoleAppenderFlushTask;
     }
 
-    public Logger getPluginLogger() {
-        return pluginLogger;
+    public LegacyPluginLogger getPluginLogger() {
+        return legacyPluginLogger;
     }
 
     public LogManager getLogManager() {

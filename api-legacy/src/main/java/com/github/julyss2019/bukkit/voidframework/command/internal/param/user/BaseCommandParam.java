@@ -2,11 +2,11 @@ package com.github.julyss2019.bukkit.voidframework.command.internal.param.user;
 
 import lombok.NonNull;
 
-public class BaseParamDescription implements ParamDescription {
+public class BaseCommandParam implements CommandParam {
     private final Class<?> type;
     private final String description;
 
-    public BaseParamDescription(@NonNull Class<?> type, @NonNull String description) {
+    public BaseCommandParam(@NonNull Class<?> type, @NonNull String description) {
         this.type = type;
         this.description = description;
     }

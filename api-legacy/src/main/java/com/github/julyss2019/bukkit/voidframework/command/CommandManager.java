@@ -3,26 +3,27 @@ package com.github.julyss2019.bukkit.voidframework.command;
 import com.github.julyss2019.bukkit.voidframework.annotation.Nullable;
 import com.github.julyss2019.bukkit.voidframework.command.failure.CommandFailureHandler;
 import com.github.julyss2019.bukkit.voidframework.command.helper.CommandHelper;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.ContextMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderContextMethodParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayParamDescription;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.FixedParamDescription;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalParamDescription;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ParamDescription;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderSenderParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayCommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.CommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.FixedCommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalCommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.util.BukkitCommandUtil;
+import com.github.julyss2019.bukkit.voidframework.command.param.parser.ParamParser;
+import com.github.julyss2019.bukkit.voidframework.command.param.parser.Response;
+import com.github.julyss2019.bukkit.voidframework.command.param.tab.completer.ParamTabCompleter;
 import com.github.julyss2019.bukkit.voidframework.command.tree.CommandTree;
 import com.github.julyss2019.bukkit.voidframework.command.tree.RootCommandTree;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandBodyElement;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandElement;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandMappingElement;
-import com.github.julyss2019.bukkit.voidframework.command.internal.util.BukkitCommandUtil;
-import com.github.julyss2019.bukkit.voidframework.command.param.parser.ParamParser;
-import com.github.julyss2019.bukkit.voidframework.command.param.parser.Response;
-import com.github.julyss2019.bukkit.voidframework.command.param.tab.completer.ParamTabCompleter;
 import com.github.julyss2019.bukkit.voidframework.internal.LegacyVoidFrameworkPlugin;
+import com.github.julyss2019.bukkit.voidframework.internal.logger.LegacyPluginLogger;
 import com.github.julyss2019.bukkit.voidframework.locale.resource.LocaleResource;
-import com.github.julyss2019.bukkit.voidframework.logging.logger.Logger;
 import com.github.julyss2019.bukkit.voidframework.text.PlaceholderContainer;
 import com.github.julyss2019.bukkit.voidframework.text.Texts;
+import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -30,6 +31,7 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,7 +40,12 @@ import java.util.stream.Collectors;
  */
 public class CommandManager {
     private final LegacyVoidFrameworkPlugin legacyVoidFrameworkPlugin;
-    private final Logger logger;
+    private final LegacyPluginLogger logger;
+    /**
+     * -- GETTER --
+     * 获取顶级命令树
+     */
+    @Getter
     private final CommandTree rootCommandTree = new RootCommandTree();
     private final Set<String> registeredBukkitCommandIds = new HashSet<>();
     private final Set<CommandFramework> commandFrameworks = new HashSet<>();
@@ -46,13 +53,6 @@ public class CommandManager {
     public CommandManager(@NonNull LegacyVoidFrameworkPlugin plugin) {
         this.legacyVoidFrameworkPlugin = plugin;
         this.logger = plugin.getPluginLogger();
-    }
-
-    /**
-     * 获取顶级命令树
-     */
-    public CommandTree getRootCommandTree() {
-        return rootCommandTree;
     }
 
     /**
@@ -193,141 +193,129 @@ public class CommandManager {
     /**
      * 调度执行命令
      */
-    private void dispatchCommand(@NonNull CommandSender sender, @NonNull String[] commandLineArray) {
-        String commandLineStr = generateCommandLine(commandLineArray);
-        logger.debug("dispatch command '%s' for '%s'", commandLineStr, sender.toString());
-
+    private void dispatchCommand(@NonNull CommandSender sender, @NonNull String[] cliArray) {
         SenderType senderType = SenderType.of(sender);
-        int commandLineArrayLength = commandLineArray.length;
-        CommandTree closestTree = getClosestCommandTree(commandLineArray);
-        CommandElement element = closestTree.getElement();
+        int cliLength = cliArray.length;
+        CommandTree closestTree = getClosestCommandTree(cliArray);
+        CommandElement closestElement = closestTree.getElement();
 
-        CommandGroupContext holder = element.getHolder();
-        CommandFramework commandFramework = holder.getCommandFramework();
+        CommandGroupContext commandGroup = closestElement.getHolder();
+        CommandFramework commandFramework = commandGroup.getCommandFramework();
         CommandHelper helper = commandFramework.getCommandHelper();
         CommandFailureHandler failureHandler = commandFramework.getCommandExecutionFailureHandler();
 
         if (helper == null) {
-            throw CommandExecutionException.newException(commandLineArray, holder, "missing CommandHelper: " + commandFramework.getClass());
+            throw CommandExecutionException.newException(cliArray, commandGroup, "missing CommandHelper: " + commandFramework.getClass());
         }
 
         if (failureHandler == null) {
-            throw CommandExecutionException.newException(commandLineArray, holder, "missing CommandExecutionFailureHandler: " + commandFramework.getClass());
+            throw CommandExecutionException.newException(cliArray, commandGroup, "missing CommandExecutionFailureHandler: " + commandFramework.getClass());
         }
 
-        int afterInputIndex = closestTree.getLevel();
+        int firstParamIndex = closestTree.getLevel();
 
         // 帮助命令
-        if (afterInputIndex < commandLineArrayLength && commandLineArray[afterInputIndex].equals("?")) {
-            // TODO 暂时不做分页
-            int page = 0;
-            int pageParamIndex = afterInputIndex + 1;
-
-            if (pageParamIndex < commandLineArrayLength) {
-                try {
-                    page = Integer.parseInt(commandLineArray[pageParamIndex]);
-                } catch (Exception ignored) {
-                }
-            }
-
-            helper.onHelp(sender, closestTree, commandLineArray);
+        if (firstParamIndex < cliLength && cliArray[firstParamIndex].equals("?")) {
+            helper.onHelp(sender, closestTree, cliArray);
             return;
         }
 
+        // 检查权限
         if (!checkPermission(sender, closestTree)) {
-            failureHandler.onMissingPermission(sender, closestTree, commandLineArray, getAvailablePermissions(closestTree).toArray(new String[]{}));
+            failureHandler.onMissingPermission(sender, closestTree, cliArray, getAvailablePermissions(closestTree).toArray(new String[]{}));
             return;
         }
 
-        if (element instanceof CommandMappingElement) {
-            // 最接近的树只匹配到了 CommandMapping 层面
-            failureHandler.onCommandFormatError(sender, closestTree, commandLineArray);
-        } else if (element instanceof CommandBodyElement) {
-            // 最接近的树匹配到了 CommandBody 层面
-            CommandBodyElement bodyElement = (CommandBodyElement) element;
-            String[] inputCommandParams = new String[commandLineArrayLength - afterInputIndex]; // 去除所有 CommandMapping + CommandBody.Id 后剩下的参数
-            int userInputParamsLength = inputCommandParams.length;
+        // 最接近的树只匹配到了 CommandMapping 层面
+        if (closestElement instanceof CommandMappingElement) {
+            failureHandler.onCommandFormatError(sender, closestTree, cliArray);
+        } else if (closestElement instanceof CommandBodyElement) {             // 最接近的树匹配到了 CommandBody 层面
+            CommandBodyElement bodyElement = (CommandBodyElement) closestElement;
+            String[] params = new String[cliLength - firstParamIndex]; // 去除所有 CommandMapping + CommandBody.Id 后剩下的参数
+            int paramsLength = params.length;
 
-            System.arraycopy(commandLineArray, afterInputIndex, inputCommandParams, 0, inputCommandParams.length);
-            logger.debug("execute by CommandGroup " + holder.getCommandGroup() + "(" + bodyElement.getMethod() + ")");
+            System.arraycopy(cliArray, firstParamIndex, params, 0, params.length);
 
             // 输入的参数在 [min, max] 之间
-            if (userInputParamsLength >= bodyElement.getMinInputParamCount() && userInputParamsLength <= bodyElement.getMaxInputParamCount()) {
-                List<Object> allParamValues = new ArrayList<>(); // 经过解析后的方法值
-                int userInputParamsIndex = 0;
+            if (paramsLength >= bodyElement.getMinInputParamCount() && paramsLength <= bodyElement.getMaxInputParamCount()) {
+                List<Object> methodParams = new ArrayList<>(); // 经过解析后的方法参数
 
                 // 处理上下文参数
-                for (ContextMethodParam contextMethodParam : bodyElement.getContextMethodParams()) {
-                    if (contextMethodParam instanceof SenderContextMethodParam) {
-                        boolean matched = false;
+                for (SenderParam senderParam : bodyElement.getSenderParams()) {
+                    if (senderParam instanceof SenderSenderParam) {
+                        boolean isMatched = false;
 
                         for (SenderType senderType1 : bodyElement.getSenderTypes()) {
                             if (senderType == senderType1) {
-                                matched = true;
+                                isMatched = true;
                                 break;
                             }
                         }
 
-                        if (!matched) {
-                            failureHandler.onCommandSenderMismatch(sender, closestTree, commandLineArray);
+                        if (!isMatched) {
+                            failureHandler.onCommandSenderMismatch(sender, closestTree, cliArray);
                             return;
                         }
 
-                        allParamValues.add(sender);
+                        methodParams.add(sender);
                     } else {
-                        throw new UnsupportedOperationException("unsupported ContextParam: " + contextMethodParam.getClass());
+                        throw new UnsupportedOperationException("unsupported ContextParam: " + senderParam.getClass());
                     }
                 }
 
-                List<ParamDescription> paramDescriptions = bodyElement.getParamDescriptions();
+                int textParamsIndex = 0;
 
-                for (ParamDescription paramDescription : paramDescriptions) {
-                    List<String> userInputParamsParseTmp = new ArrayList<>(); // 待解析的参数
+                logger.debug(bodyElement.getCommandParams().toString());
+
+                // 处理命令参数
+                for (CommandParam commandParam : bodyElement.getCommandParams()) {
+                    List<String> textParams = new ArrayList<>(); // 待解析的参数
 
                     // 固定的
-                    if (paramDescription instanceof FixedParamDescription) {
-                        userInputParamsParseTmp.add(inputCommandParams[userInputParamsIndex]);
-                    } else if (paramDescription instanceof OptionalParamDescription) { // 可选的
-                        if (userInputParamsIndex >= userInputParamsLength) {
-                            userInputParamsParseTmp.add(null);
+                    if (commandParam instanceof FixedCommandParam) {
+                        textParams.add(params[textParamsIndex]);
+                    } else if (commandParam instanceof OptionalCommandParam) { // 可选的
+                        if (textParamsIndex >= paramsLength) {
+                            textParams.add(null);
                         } else {
-                            userInputParamsParseTmp.add(inputCommandParams[userInputParamsIndex]);
+                            textParams.add(params[textParamsIndex]);
                         }
-                    } else if (paramDescription instanceof ArrayParamDescription) { // 数组的
-                        userInputParamsParseTmp.addAll(Arrays.asList(inputCommandParams).subList(userInputParamsIndex, userInputParamsLength)); // 添加当前索引后的所有参数
+                    } else if (commandParam instanceof ArrayCommandParam) { // 数组的
+                        textParams.addAll(Arrays.asList(params).subList(textParamsIndex, paramsLength)); // 添加当前索引后的所有参数
                     } else {
-                        throw new UnsupportedOperationException("unsupported UserInputMethodParam: " + paramDescription.getClass());
+                        throw new UnsupportedOperationException("unsupported UserInputMethodParam: " + commandParam.getClass());
                     }
 
-                    userInputParamsIndex++;
+                    textParamsIndex++;
+
+                    Class<?> paramType = commandParam.getType();
+
+                    // 处理数组类型
+                    if (commandParam instanceof ArrayCommandParam) {
+                        paramType = ((ArrayCommandParam) commandParam).getActualType();
+                    }
+
+                    List<Object> parsed = new ArrayList<>();
 
                     // 解析参数
-                    for (String userInputParam : userInputParamsParseTmp) {
-                        if (userInputParam == null) {
-                            allParamValues.add(null);
+                    for (String textParam : textParams) {
+                        if (textParam == null) {
+                            methodParams.add(null);
                             continue;
                         }
 
-                        Class<?> paramType = paramDescription.getType();
-
-                        // 处理数组类型
-                        if (paramDescription instanceof ArrayParamDescription) {
-                            paramType = ((ArrayParamDescription) paramDescription).getActualType();
-                        }
 
                         ParamParser paramParser = commandFramework.getParamParser(paramType);
 
                         if (paramParser == null) {
-                            throw CommandExecutionException.newException(commandLineArray,
-                                    holder,
-                                    String.format("can not found ParamParser for type '%s'", paramType.getName()));
+                            throw CommandExecutionException.newException(cliArray, commandGroup, String.format("can not found ParamParser for type '%s'", paramType.getName()));
                         }
 
                         // 参数解析
-                        Response response = paramParser.parse(sender, paramType, userInputParam);
+                        Response response = paramParser.parse(sender, paramType, textParam);
 
                         if (response == null) {
-                            throw CommandExecutionException.newException(commandLineArray, holder, "missing response");
+                            throw CommandExecutionException.newException(cliArray, commandGroup, "missing response");
                         }
 
                         Object object = response.getObject();
@@ -335,35 +323,46 @@ public class CommandManager {
 
                         if (object == null) {
                             if (errorMessage == null) {
-                                throw CommandExecutionException.newException(commandLineArray, holder, "missing errorMessage");
+                                throw CommandExecutionException.newException(cliArray, commandGroup, "missing errorMessage");
                             } else {
                                 failureHandler.onCommandParamParseError(sender,
                                         rootCommandTree,
-                                        commandLineArray,
-                                        userInputParamsIndex + afterInputIndex - 1,
-                                        Texts.setPlaceholders(errorMessage, new PlaceholderContainer().put("param", userInputParam)));
+                                        cliArray,
+                                        textParamsIndex + firstParamIndex - 1,
+                                        Texts.setPlaceholders(errorMessage, new PlaceholderContainer().put("param", textParam)));
                                 return;
                             }
                         } else {
-                            allParamValues.add(object);
+                            parsed.add(object);
                         }
+                    }
+
+                    // 如果只有一个则是普通类型，反之则是数组类型
+                    if (parsed.size() == 1) {
+                        methodParams.add(parsed.get(0));
+                    } else {
+                        Object array = Array.newInstance(paramType, parsed.size());
+
+                        for (int i = 0; i < parsed.size(); i++) {
+                            Array.set(array, i, parsed.get(i));
+                        }
+
+                        methodParams.add(array);
                     }
                 }
 
                 // 执行方法
                 try {
-                    logger.debug(String.format("method params: %s", allParamValues));
-                    bodyElement.invokeMethod(allParamValues.toArray());
+                    logger.debug(String.format("Method params: %s", methodParams));
+                    bodyElement.invokeMethod(methodParams.toArray());
                 } catch (Exception e) {
-                    throw CommandExecutionException.newException(commandLineArray, holder, "method error", e);
+                    throw CommandExecutionException.newException(cliArray, commandGroup, "method error", e);
                 }
-
-                logger.debug("method invoked");
             } else {
-                failureHandler.onCommandFormatError(sender, closestTree, commandLineArray);
+                failureHandler.onCommandFormatError(sender, closestTree, cliArray);
             }
         } else {
-            throw new UnsupportedOperationException("unsupported element: " + element.getClass().getName());
+            throw new UnsupportedOperationException("unsupported closestElement: " + closestElement.getClass().getName());
         }
     }
 
@@ -386,10 +385,10 @@ public class CommandManager {
             int inputLen = len - closestTree.getLevel(); // 已输入的参数数量
 
             if (inputLen > 0 && inputLen <= commandBodyElement.getMaxInputParamCount()) {
-                List<ParamDescription> paramDescriptions = commandBodyElement.getParamDescriptions();
+                List<CommandParam> commandParams = commandBodyElement.getCommandParams();
                 int paramIndex = inputLen - 1;
-                ParamDescription paramDescription = paramDescriptions.get(paramIndex);
-                Class<?> paramType = paramDescription.getType();
+                CommandParam commandParam = commandParams.get(paramIndex);
+                Class<?> paramType = commandParam.getType();
                 ParamTabCompleter tabCompleter = closestHolder.getCommandFramework().getParamTabCompleter(paramType);
 
                 if (tabCompleter != null) {

@@ -15,7 +15,7 @@ import com.github.julyss2019.bukkit.voidframework.command.param.tab.completer.In
 import com.github.julyss2019.bukkit.voidframework.command.param.tab.completer.ParamTabCompleter;
 import com.github.julyss2019.bukkit.voidframework.command.param.tab.completer.PlayerParamTabCompleter;
 import com.github.julyss2019.bukkit.voidframework.internal.LegacyVoidFrameworkPlugin;
-import com.github.julyss2019.bukkit.voidframework.logging.logger.Logger;
+import com.github.julyss2019.bukkit.voidframework.internal.logger.LegacyPluginLogger;
 import lombok.NonNull;
 import org.bukkit.plugin.Plugin;
 
@@ -25,7 +25,7 @@ import java.util.*;
 public class CommandFramework {
     private final LegacyVoidFrameworkPlugin legacyVoidFrameworkPlugin;
     private final Plugin plugin;
-    private final Logger logger;
+    private final LegacyPluginLogger logger;
     private final CommandManager commandManager;
     private final CommandMapping pluginScopeCommandMapping; // 插件层面的命令映射注解
     private final Set<CommandGroupContext> commandGroupContexts = new HashSet<>();

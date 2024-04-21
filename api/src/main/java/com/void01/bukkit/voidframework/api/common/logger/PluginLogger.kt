@@ -5,11 +5,22 @@ import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 
 class PluginLogger(val plugin: Plugin) {
-    var level: Level = Level.INFO
+    @Deprecated("命名优化")
+    var level: Level
+        get() = threshold
+        set(value) {
+            threshold = value
+        }
 
-    fun log(level: Level, message: String) {
-        if (level.intLevel >= this.level.intLevel) {
-            Bukkit.getConsoleSender().sendMessage("${level.color}[${plugin.name}] [${level.name}] $message".toColored())
+    var threshold: Level = Level.INFO
+        set(value) {
+            field = value
+            plugin.logger.info("日志等级: $value")
+        }
+
+    fun log(threshold: Level, message: String) {
+        if (threshold.intLevel >= this.level.intLevel) {
+            Bukkit.getConsoleSender().sendMessage("${threshold.color}[${plugin.name}] [${threshold.name}] $message".toColored())
         }
     }
 

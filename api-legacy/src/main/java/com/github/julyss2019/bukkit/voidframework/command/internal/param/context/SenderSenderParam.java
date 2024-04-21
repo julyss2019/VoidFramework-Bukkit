@@ -2,10 +2,10 @@ package com.github.julyss2019.bukkit.voidframework.command.internal.param.contex
 
 import lombok.NonNull;
 
-public class SenderContextMethodParam implements ContextMethodParam {
+public class SenderSenderParam implements SenderParam {
     private final Class<?> type;
 
-    public SenderContextMethodParam(@NonNull Class<?> type) {
+    public SenderSenderParam(@NonNull Class<?> type) {
         this.type = type;
     }
 
