@@ -30,7 +30,7 @@ class GroovyManagerImpl(plugin: VoidFrameworkPlugin) : GroovyManager {
             Library.Builder.create()
                 .setClassLoader(groovyIsolatedClassLoader)
                 .addRepositories(Repository.ALIYUN, Repository.CENTRAL)
-                .setDependencyByGradleStyleExpression("org.apache.groovy:groovy:4.0.14")
+                .setDependencyByGradleStyleExpression("org.apache.groovy:groovy:4.0.21")
                 .build()
         )
 
