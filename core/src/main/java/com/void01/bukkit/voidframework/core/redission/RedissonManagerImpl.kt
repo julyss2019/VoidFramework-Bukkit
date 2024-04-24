@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.void01.bukkit.voidframework.core.redission
 
 import com.github.julyss2019.bukkit.voidframework.yaml.DefaultValue
@@ -25,25 +27,32 @@ class RedissonManagerImpl(plugin: VoidFrameworkPlugin) : RedissonManager {
                     address = it.getString("url")
                 }
 
+                val id = it.name
                 val clientInst = Redisson.create(config)
 
-                jedisClientMap[it.name] = clientInst
+                jedisClientMap[id] = clientInst
+                logger.info("已载入 Redisson 客户端: $id")
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }
         }
-
-        logger.info("载入了 ${jedisClientMap.size} 个共享 Redisson 客户端: ")
-        jedisClientMap.keys.forEach {
-            logger.info(it)
-        }
     }
 
+    @Deprecated("命名优化")
     override fun getSharedClientOrNull(id: String): RedissonClient? {
         return jedisClientMap[id]
     }
 
+    @Deprecated("命名优化")
     override fun getSharedClient(id: String): RedissonClient {
         return getSharedClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared RedissonClient by id: $id")
+    }
+
+    override fun getClient(id: String): RedissonClient {
+        return getClientOrNull(id) ?: throw IllegalArgumentException("Unable to find shared RedissonClient by id: $id")
+    }
+
+    override fun getClientOrNull(id: String): RedissonClient? {
+        return jedisClientMap[id]
     }
 }

@@ -41,6 +41,20 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
         return handle.contains(path)
     }
 
+    fun get(path: String): Any {
+        return getOrThrow(path) {
+            getOrNull(path)
+        }
+    }
+
+    fun getOrNull(path: String): Any? = getOrDefault(path, null)
+
+    fun getOrDefault(path: String, def: Any?): Any? {
+        return getOrDefault(path, def) {
+            handle.get(path)
+        }
+    }
+
     fun getSection(path: String): Section2 {
         return getOrThrow(path) {
             getSectionOrNull(path)

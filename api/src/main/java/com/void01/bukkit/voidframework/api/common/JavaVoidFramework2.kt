@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.void01.bukkit.voidframework.api.common
 
 import com.void01.bukkit.voidframework.api.common.datasource.DataSourceManager

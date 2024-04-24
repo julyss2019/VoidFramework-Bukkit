@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.void01.bukkit.voidframework.core
 
 import com.github.julyss2019.bukkit.voidframework.VoidFramework
@@ -6,6 +8,7 @@ import com.github.julyss2019.bukkit.voidframework.internal.LegacyVoidFrameworkPl
 import com.void01.bukkit.voidframework.api.common.JavaVoidFramework2
 import com.void01.bukkit.voidframework.api.common.VoidFramework2
 import com.void01.bukkit.voidframework.api.common.VoidFramework3
+import com.void01.bukkit.voidframework.api.common.component.ComponentManager
 import com.void01.bukkit.voidframework.api.common.datasource.DataSourceManager
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSourceManager
 import com.void01.bukkit.voidframework.api.common.extension.VoidPlugin
@@ -20,8 +23,9 @@ import com.void01.bukkit.voidframework.api.internal.Context
 import com.void01.bukkit.voidframework.common.FileUtils
 import com.void01.bukkit.voidframework.common.UrlClassLoaderModifier
 import com.void01.bukkit.voidframework.common.kotlin.safeShadow
+import com.void01.bukkit.voidframework.core.component.ComponentManagerImpl
 import com.void01.bukkit.voidframework.core.datasource.DataSourceManagerImpl
-import com.void01.bukkit.voidframework.core.datasource.shared.SharedDataSourceManagerImpl
+import com.void01.bukkit.voidframework.core.datasource.SharedDataSourceManagerImpl
 import com.void01.bukkit.voidframework.core.groovy.GroovyManagerImpl
 import com.void01.bukkit.voidframework.core.internal.MainCommandGroup
 import com.void01.bukkit.voidframework.core.library.LibraryManagerImpl
@@ -41,6 +45,14 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
         get() {
             return dataFolder.toPath().resolve("script-libs")
         }
+    val componentsPath: Path
+        get() {
+            return dataFolder.toPath().resolve("components")
+        }
+    val componentLibsPath: Path
+        get() {
+            return dataFolder.toPath().resolve("component-libs")
+        }
 
     private var legacy: LegacyVoidFrameworkPlugin? = null
     override var libraryManager: LibraryManager
@@ -57,14 +69,15 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
         private set
     override lateinit var scriptManager: ScriptManager
         private set
-
+    override lateinit var componentManager: ComponentManager
+        private set
 
     init {
         libraryManager = LibraryManagerImpl(this)
 
         loadLibraries()
-        VoidFramework3.setContext(this)
         VoidFramework2.setContext(this)
+        VoidFramework3.setContext(this);
         JavaVoidFramework2.setContext(this)
     }
 
@@ -101,7 +114,7 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
 
     override fun onPluginEnable() {
         // 本地库
-        FileUtils.listFiles(dataFolder.toPath().resolve("local-libs"), ".jar").forEach {
+        FileUtils.listFiles(dataFolder.toPath().resolve("local-libs"), "jar").forEach {
             UrlClassLoaderModifier.addUrl(classLoader, it.toFile())
             pluginLogger.info("已载入本地库: ${it.absolutePathString()}")
         }
@@ -109,12 +122,13 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
         legacy = LegacyVoidFrameworkPlugin(this)
         legacy!!.onEnable()
 
-        dataSourceManager = DataSourceManagerImpl()
         groovyManager = GroovyManagerImpl(this)
+        dataSourceManager = DataSourceManagerImpl(this)
         sharedDataSourceManager = SharedDataSourceManagerImpl(this)
         mongoDbManager = MongoDbManagerImpl(this)
         redissonManager = RedissonManagerImpl(this)
         scriptManager = ScriptManagerImpl(this)
+        componentManager = ComponentManagerImpl(this)
 
         VoidFramework.getCommandManager().createCommandFramework(this).apply {
             registerCommandGroup(MainCommandGroup(this@VoidFrameworkPlugin))
@@ -129,5 +143,6 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
     fun reload() {
         legacy!!.reload()
         (scriptManager as ScriptManagerImpl).reload()
+        (componentManager as ComponentManagerImpl).reload()
     }
 }

@@ -11,6 +11,7 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import kotlin.io.path.exists
+import kotlin.io.path.name
 import kotlin.streams.toList
 
 
@@ -19,22 +20,25 @@ object FileUtils {
      * 递归获取文件
      *
      * @param dir 文件夹
-     * @param suffixFilter 后缀名规律器
+     * @param suffix 后缀名匹配
      */
-    fun listFiles(dir: Path, suffixFilter: String = ""): List<Path> {
+    fun listFiles(dir: Path, suffix: String? = null): List<Path> {
         if (!dir.exists()) {
             return emptyList()
         }
 
         return Files.walk(dir).use { walk ->
-            walk
-                .filter {
-                    Files.isRegularFile(it)
+            var stream = walk.filter {
+                Files.isRegularFile(it)
+            }
+
+            if (suffix != null) {
+                stream = stream.filter {
+                    it.name.substringAfterLast('.', "") == suffix
                 }
-                .filter {
-                    it.toString().endsWith(suffixFilter)
-                }
-                .toList()
+            }
+
+            stream.toList()
         }
     }
 

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.void01.bukkit.voidframework.core.groovy
 
 import com.void01.bukkit.voidframework.api.common.VoidFramework3

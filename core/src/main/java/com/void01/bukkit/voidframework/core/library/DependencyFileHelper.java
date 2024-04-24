@@ -10,7 +10,7 @@ public class DependencyFileHelper {
     private final File libsDir;
 
     public DependencyFileHelper(@NonNull VoidFrameworkPlugin plugin) {
-        this.libsDir = new File(plugin.getDataFolder(), "libs");
+        this.libsDir = new File(plugin.getDataFolder(), "rep-libs");
     }
 
     public File getDependencyMainFile(@NonNull Dependency dependency, @NonNull DependencyFileType type) {

@@ -18,14 +18,7 @@ open class VoidPlugin : JavaPlugin() {
     override fun onEnable() {
         pluginLogger = PluginLogger(this)
 
-        val logConfigFile = getLogConfigFile()
-
-        if (logConfigFile?.exists() == true) {
-            pluginLogger.threshold = Yaml2.from(logConfigFile).getEnumOrDefault("threshold", Level::class.java, Level.INFO)!!
-        } else {
-            pluginLogger.threshold = Level.INFO
-        }
-
+        initLogLevel()
         onPluginEnable()
     }
 
@@ -45,8 +38,14 @@ open class VoidPlugin : JavaPlugin() {
         })
     }
 
-    open fun getLogConfigFile(): File? {
-        return File(dataFolder, "log.yml")
+    open fun initLogLevel() {
+        val logConfigFile = File(dataFolder, "config.yml")
+
+        if (logConfigFile.exists()) {
+            pluginLogger.threshold = Yaml2.from(logConfigFile).getEnumOrDefault("log.threshold", Level::class.java, Level.INFO)!!
+        } else {
+            pluginLogger.threshold = Level.INFO
+        }
     }
 
     open fun onPluginEnable() {

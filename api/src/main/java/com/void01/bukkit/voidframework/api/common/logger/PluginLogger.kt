@@ -19,7 +19,7 @@ class PluginLogger(val plugin: Plugin) {
         }
 
     fun log(threshold: Level, message: String) {
-        if (threshold.intLevel >= this.level.intLevel) {
+        if (threshold.intLevel >= this.threshold.intLevel) {
             Bukkit.getConsoleSender().sendMessage("${threshold.color}[${plugin.name}] [${threshold.name}] $message".toColored())
         }
     }

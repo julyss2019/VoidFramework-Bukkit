@@ -1,5 +1,6 @@
 package com.void01.bukkit.voidframework.api.common;
 
+import com.void01.bukkit.voidframework.api.common.component.ComponentManager;
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSourceManager;
 import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager;
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager;
@@ -17,6 +18,10 @@ public class VoidFramework3 {
         }
 
         VoidFramework3.context = context;
+    }
+
+    public static ComponentManager getComponentManager() {
+        return context.getComponentManager();
     }
 
     public static LibraryManager getLibraryManager() {

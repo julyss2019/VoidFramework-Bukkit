@@ -20,6 +20,7 @@ object PlayerUtils {
      */
     fun isOnline(playerName: String): Boolean {
         // Bukkit 似乎有个 Bug，July_ss 在线，July 不在线，但仍然会获取到 July_ss
+        @Suppress("DEPRECATION")
         return Bukkit.getPlayer(playerName).let {
             if (it != null) {
                 it.name == playerName

@@ -21,6 +21,7 @@ class GroovyClassLoaderReflectionHelper(isolatedClassLoader: IsolatedClassLoader
     }
 
     fun getLoadedClasses(obj: Any): List<Class<*>> {
+        @Suppress("UNCHECKED_CAST")
         return (groovyClassLoaderClass.getDeclaredMethod("getLoadedClasses").invoke(obj) as Array<Class<*>>).toList()
     }
 

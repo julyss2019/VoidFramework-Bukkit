@@ -1,28 +1,15 @@
+@file:Suppress("DEPRECATION")
+
 package com.void01.bukkit.voidframework.core.datasource.shared
 
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSource
-import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import org.bukkit.configuration.ConfigurationSection
 import java.io.PrintWriter
 import java.sql.Connection
-import java.util.*
 import java.util.logging.Logger
 
-class HikariSharedDataSource : SharedDataSource {
-    private lateinit var hikariDataSource: HikariDataSource
-
-    override fun loadProperties(section: ConfigurationSection) {
-        val properties = Properties()
-
-        section.getKeys(false).forEach {
-            properties[it] = section.get(it)
-        }
-
-        hikariDataSource = HikariDataSource(HikariConfig(properties))
-    }
-
-    override fun close() {
+class HikariSharedDataSource(private val hikariDataSource: HikariDataSource) : SharedDataSource {
+    fun close() {
         hikariDataSource.close()
     }
 

@@ -4,7 +4,7 @@ class GroovyCompilerConfig {
     var sourceEncoding: String = "UTF-8"
     private val classPaths = mutableSetOf<String>()
 
-    @Deprecated(message = "大小写错误", replaceWith = ReplaceWith("this.addClassPath(classPath)"))
+    @Deprecated(message = "方法名大小写不规范", replaceWith = ReplaceWith("this.addClassPath(classPath)"))
     fun addClasspath(classPath: String) {
         classPaths.add(classPath)
     }

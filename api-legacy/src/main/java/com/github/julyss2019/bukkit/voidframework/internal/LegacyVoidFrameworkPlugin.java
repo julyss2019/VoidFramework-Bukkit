@@ -5,8 +5,8 @@ import com.github.julyss2019.bukkit.voidframework.command.CommandFramework;
 import com.github.julyss2019.bukkit.voidframework.command.CommandManager;
 import com.github.julyss2019.bukkit.voidframework.common.Plugins;
 import com.github.julyss2019.bukkit.voidframework.internal.listener.PluginUnregisterListener;
-import com.github.julyss2019.bukkit.voidframework.internal.logger.Level;
 import com.github.julyss2019.bukkit.voidframework.internal.logger.LegacyPluginLogger;
+import com.github.julyss2019.bukkit.voidframework.internal.logger.Level;
 import com.github.julyss2019.bukkit.voidframework.internal.task.ConsoleAppenderFlushTask;
 import com.github.julyss2019.bukkit.voidframework.internal.task.LoggerDailyFileAppenderAutoFlushTask;
 import com.github.julyss2019.bukkit.voidframework.locale.LocaleParser;
@@ -50,9 +50,13 @@ public class LegacyVoidFrameworkPlugin {
         this.logManager = new LogManager(this);
         this.legacyPluginLogger = new LegacyPluginLogger(plugin);
 
-        Yaml yaml = Yaml.fromPluginConfigFile(plugin);
+        File legacyLogFile = new File(plugin.getDataFolder(), "config.yml");
 
-        legacyPluginLogger.setThreshold(yaml.getEnum("legacy-log-level", Level.class, DefaultValue.of(Level.INFO)));
+        if (legacyLogFile.exists()) {
+            Yaml legacyLogYaml = Yaml.fromFile(legacyLogFile);
+
+            legacyPluginLogger.setThreshold(legacyLogYaml.getEnum("log.threshold", Level.class, DefaultValue.of(Level.INFO)));
+        }
 
         this.commandManager = new CommandManager(this);
         this.commandFramework = commandManager.createCommandFramework(plugin);
