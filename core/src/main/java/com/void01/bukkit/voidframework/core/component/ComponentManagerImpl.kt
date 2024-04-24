@@ -5,11 +5,11 @@ import com.void01.bukkit.voidframework.api.common.component.ComponentManager
 import com.void01.bukkit.voidframework.api.common.library.IsolatedClassLoader
 import com.void01.bukkit.voidframework.common.FileUtils
 import com.void01.bukkit.voidframework.core.VoidFrameworkPlugin
-import kotlin.io.path.pathString
+import kotlin.io.path.absolutePathString
 
 class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentManager {
     private val logger = plugin.pluginLogger
-    private val isolatedClassLoader: IsolatedClassLoader = IsolatedClassLoader(plugin.javaClass.classLoader)
+    private lateinit var isolatedClassLoader: IsolatedClassLoader
 
     init {
         load()
@@ -20,13 +20,14 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
     }
 
     private fun load() {
+        isolatedClassLoader = IsolatedClassLoader(plugin.javaClass.classLoader)
         FileUtils.listFiles(plugin.componentsPath, "jar").forEach {
             isolatedClassLoader.addURL(it.toFile())
-            logger.info("已载入组件: ${it.pathString}")
+            logger.info("已载入组件: ${it.absolutePathString()}")
         }
         FileUtils.listFiles(plugin.componentLibsPath, "jar").forEach {
             isolatedClassLoader.addURL(it.toFile())
-            logger.info("已载入组件库: ${it.pathString}")
+            logger.info("已载入组件库: ${it.absolutePathString()}")
         }
     }
 
