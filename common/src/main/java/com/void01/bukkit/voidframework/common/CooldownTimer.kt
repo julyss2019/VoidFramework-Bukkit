@@ -26,6 +26,13 @@ class CooldownTimer {
     }
 
     /**
+     * 增加冷却时间（以 tick 为单位）
+     */
+    fun addCooldownTicks(ticks : Long) {
+        addCooldown(ticks * 50L, TimeUnit.MILLISECONDS)
+    }
+
+    /**
      * 获取冷却时间
      */
     fun getCooldown(timeUnit: TimeUnit): Long {
@@ -44,5 +51,9 @@ class CooldownTimer {
 
     fun getCooldownMilliseconds(): Long {
         return getCooldown(TimeUnit.MILLISECONDS)
+    }
+
+    fun getCooldownTicks() : Long {
+        return getCooldownMilliseconds() / 50L
     }
 }
