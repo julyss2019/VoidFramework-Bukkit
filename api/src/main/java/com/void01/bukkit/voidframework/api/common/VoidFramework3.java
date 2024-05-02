@@ -1,6 +1,9 @@
 package com.void01.bukkit.voidframework.api.common;
 
+import com.github.julyss2019.bukkit.voidframework.VoidFramework;
+import com.github.julyss2019.bukkit.voidframework.command.CommandManager;
 import com.void01.bukkit.voidframework.api.common.component.ComponentManager;
+import com.void01.bukkit.voidframework.api.common.datasource.DataSourceManager;
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSourceManager;
 import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager;
 import com.void01.bukkit.voidframework.api.common.library.LibraryManager;
@@ -32,10 +35,6 @@ public class VoidFramework3 {
         return context.getGroovyManager();
     }
 
-    public static SharedDataSourceManager getSharedDataSourceManager() {
-        return context.getSharedDataSourceManager();
-    }
-
     public static MongoDbManager getMongoDbManager() {
         return context.getMongoDbManager();
     }
@@ -44,6 +43,20 @@ public class VoidFramework3 {
         return context.getRedissonManager();
     }
 
+    public static CommandManager getCommandManager() {
+        return VoidFramework.getCommandManager();
+    }
+
+    public static DataSourceManager getDataSourceManager() {
+        return context.getDataSourceManager();
+    }
+
+    @Deprecated
+    public static SharedDataSourceManager getSharedDataSourceManager() {
+        return context.getSharedDataSourceManager();
+    }
+
+    @Deprecated
     public static ScriptManager getScriptManager() {
         return context.getScriptManager();
     }

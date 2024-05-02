@@ -1,5 +1,6 @@
 package com.void01.bukkit.voidframework.api.common.script
 
+@Deprecated("弃用")
 interface ScriptManager {
     val scripts: List<Script>
 

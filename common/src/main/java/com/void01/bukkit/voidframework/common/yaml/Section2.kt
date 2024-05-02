@@ -115,6 +115,14 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
         }
     }
 
+    fun getFloat(path: String): Float {
+        return getOrThrow(path) { getFloatOrNull(path) }
+    }
+
+    fun getFloatOrNull(path: String): Float? = getFloatOrDefault(path, null)
+
+    fun getFloatOrDefault(path: String, default: Float?): Float? = getDoubleOrDefault(path, default?.toDouble())?.toFloat()
+
     fun getString(path: String): String {
         return getOrThrow(path) {
             getStringOrNull(path)
@@ -151,6 +159,10 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
 
     fun <E : Enum<E>> getEnumOrDefault(path: String, clazz: Class<E>, default: E?): E? {
         return Reflections.getEnum(clazz, getStringOrNull(path) ?: return default)
+    }
+
+    fun set(path: String, obj: Any) {
+        handle.set(path, obj)
     }
 
     /**

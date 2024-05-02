@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.void01.bukkit.voidframework.core
 
 import com.github.julyss2019.bukkit.voidframework.VoidFramework
@@ -77,8 +75,8 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
 
         loadLibraries()
         VoidFramework2.setContext(this)
-        VoidFramework3.setContext(this);
         JavaVoidFramework2.setContext(this)
+        VoidFramework3.setContext(this);
     }
 
     private fun loadLibraries() {

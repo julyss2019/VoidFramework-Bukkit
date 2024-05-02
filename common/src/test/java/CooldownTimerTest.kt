@@ -1,7 +1,7 @@
 import com.void01.bukkit.voidframework.common.CooldownTimer
+import com.void01.bukkit.voidframework.common.TimeUnit
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.concurrent.TimeUnit
 
 class CooldownTimerTest {
     @Test

@@ -1,10 +1,9 @@
 package com.void01.bukkit.voidframework.common
 
-import java.util.concurrent.TimeUnit
 
 class CooldownTimer {
     /**
-     * 是否在冷却中
+     * 是否已经冷却完毕
      */
     val isFinished: Boolean get() = System.currentTimeMillis() > finishTimeMillis
 
@@ -26,13 +25,6 @@ class CooldownTimer {
     }
 
     /**
-     * 增加冷却时间（以 tick 为单位）
-     */
-    fun addCooldownTicks(ticks : Long) {
-        addCooldown(ticks * 50L, TimeUnit.MILLISECONDS)
-    }
-
-    /**
      * 获取冷却时间
      */
     fun getCooldown(timeUnit: TimeUnit): Long {
@@ -42,18 +34,7 @@ class CooldownTimer {
 
         val remaining = (finishTimeMillis - System.currentTimeMillis()).coerceAtLeast(0)
 
+        // MILLS -> ?
         return timeUnit.convert(remaining, TimeUnit.MILLISECONDS)
-    }
-
-    fun getCooldownSeconds(): Long {
-        return getCooldown(TimeUnit.SECONDS)
-    }
-
-    fun getCooldownMilliseconds(): Long {
-        return getCooldown(TimeUnit.MILLISECONDS)
-    }
-
-    fun getCooldownTicks() : Long {
-        return getCooldownMilliseconds() / 50L
     }
 }
