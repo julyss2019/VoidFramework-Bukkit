@@ -39,7 +39,7 @@ class ScriptManagerImpl(private val plugin: VoidFrameworkPlugin) : ScriptManager
 
         FileUtils.listFiles(scriptLibsPath, "jar").forEach {
             isolatedClassLoader.addURL(it.toFile())
-            logger.info("已载入脚本库: ${it.absolutePathString()}.")
+            logger.info("已加载脚本库: ${it.absolutePathString()}.")
         }
 
         val groovyClassLoader = VoidFramework3.getGroovyManager().createClassLoader(
@@ -56,7 +56,7 @@ class ScriptManagerImpl(private val plugin: VoidFrameworkPlugin) : ScriptManager
                 logger.warn("在解析脚本 ${it.absolutePathString()} 时发生了异常\n${ex.stackTraceToString()}")
             }
 
-            logger.info("已载入脚本: ${it.absolutePathString()} [${relativePath}]")
+            logger.info("已加载脚本: ${it.absolutePathString()} [${relativePath}]")
         }
     }
 

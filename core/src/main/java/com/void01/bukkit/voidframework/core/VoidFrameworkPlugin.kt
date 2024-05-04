@@ -114,7 +114,7 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
         // 本地库
         FileUtils.listFiles(dataFolder.toPath().resolve("local-libs"), "jar").forEach {
             UrlClassLoaderModifier.addUrl(classLoader, it.toFile())
-            pluginLogger.info("已载入本地库: ${it.absolutePathString()}")
+            pluginLogger.info("已加载本地库: ${it.absolutePathString()}")
         }
 
         legacy = LegacyVoidFrameworkPlugin(this)

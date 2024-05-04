@@ -31,7 +31,7 @@ class RedissonManagerImpl(plugin: VoidFrameworkPlugin) : RedissonManager {
                 val clientInst = Redisson.create(config)
 
                 jedisClientMap[id] = clientInst
-                logger.info("已载入 Redisson 客户端: $id")
+                logger.info("已加载 Redisson 客户端: $id")
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

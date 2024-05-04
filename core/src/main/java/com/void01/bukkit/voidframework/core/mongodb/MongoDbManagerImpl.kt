@@ -24,7 +24,7 @@ class MongoDbManagerImpl(plugin: VoidFrameworkPlugin) : MongoDbManager {
                     val clientInst = MongoClients.create(it.getString("url"))
 
                     mongoDbClientMap[it.name] = clientInst!!
-                    logger.info("已载入 MongoDB 客户端: ${it.name}")
+                    logger.info("已加载 MongoDB 客户端: ${it.name}")
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                 }

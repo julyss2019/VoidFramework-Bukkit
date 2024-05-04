@@ -23,11 +23,11 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
         isolatedClassLoader = IsolatedClassLoader(plugin.javaClass.classLoader)
         FileUtils.listFiles(plugin.componentsPath, "jar").forEach {
             isolatedClassLoader.addURL(it.toFile())
-            logger.info("已载入组件: ${it.absolutePathString()}")
+            logger.info("已加载组件: ${it.absolutePathString()}")
         }
         FileUtils.listFiles(plugin.componentLibsPath, "jar").forEach {
             isolatedClassLoader.addURL(it.toFile())
-            logger.info("已载入组件库: ${it.absolutePathString()}")
+            logger.info("已加载组件库: ${it.absolutePathString()}")
         }
     }
 
@@ -36,8 +36,12 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
     }
 
     override fun getComponentOrNull(name: String): Component? {
-        return isolatedClassLoader.loadClass(name)?.let {
-            return ComponentImpl(it)
+        return try {
+            isolatedClassLoader.loadClass(name)?.let {
+                ComponentImpl(it)
+            }
+        } catch (ex : ClassNotFoundException) {
+            null
         }
     }
 }

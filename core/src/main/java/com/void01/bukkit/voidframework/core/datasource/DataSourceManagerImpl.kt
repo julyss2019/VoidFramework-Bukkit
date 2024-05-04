@@ -32,7 +32,7 @@ class DataSourceManagerImpl(private val plugin: VoidFrameworkPlugin) : DataSourc
             val dataSource = HikariDataSource(HikariConfig(properties))
 
             dataSourceMap[name] = dataSource
-            logger.info("已载入 DataSource: $name")
+            logger.info("已加载 DataSource: $name")
         }
     }
 
