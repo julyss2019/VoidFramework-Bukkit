@@ -31,6 +31,9 @@ class StopWatch {
             "Not yet started"
         }
 
-        return TimeUnit.MILLISECONDS.convert(System.currentTimeMillis() - start, timeUnit)
+        val tmp = TimeUnit.MILLISECONDS.convert(System.currentTimeMillis() - start, timeUnit)
+
+        start = -1L
+        return tmp
     }
 }
