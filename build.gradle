@@ -6,7 +6,7 @@ plugins {
 }
 
 subprojects {
-    version '2.1.8-alpha'
+    version '2.2.0-alpha'
     version += '-' + 'git rev-parse --short HEAD'.execute().text.trim()
     group 'com.void01.bukkit'
 
@@ -35,6 +35,9 @@ subprojects {
         }
         maven {
             url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+        maven {
+            url 'https://maven.void01.com/repository/bukkit-plugin/'
         }
     }
 

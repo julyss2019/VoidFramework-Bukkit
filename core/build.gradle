@@ -14,8 +14,7 @@ dependencies {
     compileOnly 'org.redisson:redisson:3.27.2'
     compileOnly 'com.zaxxer:HikariCP:4.0.3'
     compileOnly 'org.mongodb:mongodb-driver-sync:4.11.1'
-    // compileOnly 'me.lucko:jar-relocator:1.7'
-    // compileOnly 'org.apache.groovy:groovy:4.0.14'
+    compileOnly 'com.void01.bukkit.thirdparty:Vault:1.7.3-b131'
 }
 
 processResources {
