@@ -23,9 +23,9 @@ open class VoidPlugin : JavaPlugin() {
     }
 
     override fun onDisable() {
-        onPluginDisable()
         VoidFramework.getCommandManager().unregisterCommandFrameworks(this)
         VoidFramework.getLogManager().unregisterLoggers(this)
+        onPluginDisable()
     }
 
     fun saveDefaults() {
