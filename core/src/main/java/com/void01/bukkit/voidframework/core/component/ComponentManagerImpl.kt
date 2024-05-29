@@ -21,6 +21,7 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
 
     private fun load() {
         isolatedClassLoader = IsolatedClassLoader(plugin.javaClass.classLoader)
+        System.gc()
         FileUtils.listFiles(plugin.componentsPath, "jar").forEach {
             isolatedClassLoader.addURL(it.toFile())
             logger.info("已加载组件: ${it.absolutePathString()}")
