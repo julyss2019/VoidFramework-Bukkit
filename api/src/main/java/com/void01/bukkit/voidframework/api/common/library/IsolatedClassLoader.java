@@ -7,7 +7,6 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,10 +61,16 @@ public class IsolatedClassLoader extends URLClassLoader {
             }
 
             try {
-                return findClass(name);
-            } catch (ClassNotFoundException exception) {
+                loadedClass = findClass(name);
+            } catch (ClassNotFoundException ignored) {
+            }
+
+            if (loadedClass == null) {
+                // 调用父类加载器
                 return super.loadClass(name);
             }
+
+            return loadedClass;
         }
     }
 }

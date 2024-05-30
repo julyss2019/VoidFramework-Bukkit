@@ -9,7 +9,7 @@ import kotlin.io.path.absolutePathString
 
 class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentManager {
     private val logger = plugin.pluginLogger
-    private lateinit var isolatedClassLoader: IsolatedClassLoader
+    private lateinit var componentClassLoader: IsolatedClassLoader
 
     init {
         load()
@@ -20,15 +20,15 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
     }
 
     private fun load() {
-        isolatedClassLoader = IsolatedClassLoader(plugin.javaClass.classLoader)
-        System.gc()
-        FileUtils.listFiles(plugin.componentsPath, "jar").forEach {
-            isolatedClassLoader.addURL(it.toFile())
-            logger.info("已加载组件: ${it.absolutePathString()}")
-        }
+        componentClassLoader = IsolatedClassLoader(plugin.javaClass.classLoader)
+
         FileUtils.listFiles(plugin.componentLibsPath, "jar").forEach {
-            isolatedClassLoader.addURL(it.toFile())
+            componentClassLoader.addURL(it.toFile())
             logger.info("已加载组件库: ${it.absolutePathString()}")
+        }
+        FileUtils.listFiles(plugin.componentsPath, "jar").forEach {
+            componentClassLoader.addURL(it.toFile())
+            logger.info("已加载组件: ${it.absolutePathString()}")
         }
     }
 
@@ -38,10 +38,10 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
 
     override fun getComponentOrNull(name: String): Component? {
         return try {
-            isolatedClassLoader.loadClass(name)?.let {
+            componentClassLoader.loadClass(name)?.let {
                 ComponentImpl(it)
             }
-        } catch (ex : ClassNotFoundException) {
+        } catch (ex: ClassNotFoundException) {
             null
         }
     }
