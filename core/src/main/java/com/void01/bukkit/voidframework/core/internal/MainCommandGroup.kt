@@ -14,10 +14,4 @@ class MainCommandGroup(private val plugin: VoidFrameworkPlugin) : CommandGroup {
         plugin.reload()
         MessageUtils.sendMessage(sender, "重载完毕.")
     }
-
-    @CommandBody(value = "unloadComponents", description = "卸载所有组件")
-    fun unloadComponents(sender: CommandSender) {
-        (plugin.componentManager as ComponentManagerImpl).unloadComponents()
-        MessageUtils.sendMessage(sender, "已卸载所有组件.")
-    }
 }

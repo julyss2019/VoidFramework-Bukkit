@@ -66,8 +66,14 @@ public class IsolatedClassLoader extends URLClassLoader {
             }
 
             if (loadedClass == null) {
-                // 调用父类加载器
-                return super.loadClass(name);
+                try {
+                    loadedClass = super.loadClass(name);
+                } catch (ClassNotFoundException ignored) {
+                }
+            }
+
+            if (loadedClass == null) {
+                throw new ClassNotFoundException(name);
             }
 
             return loadedClass;
