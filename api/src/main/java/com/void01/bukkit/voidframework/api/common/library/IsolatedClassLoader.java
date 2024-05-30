@@ -4,6 +4,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -30,6 +31,11 @@ public class IsolatedClassLoader extends URLClassLoader {
         whitelistClasses.add("java");
         whitelistClasses.add("org.bukkit");
         whitelistClasses.add("io.izzel.arclight");
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
     }
 
     public List<String> getWhitelistClasses() {
@@ -63,7 +69,7 @@ public class IsolatedClassLoader extends URLClassLoader {
 
             try {
                 return findClass(name);
-            } catch (ClassNotFoundException exception) {
+            } catch (ClassNotFoundException | NoClassDefFoundError exception) {
                 return super.loadClass(name);
             }
         }
