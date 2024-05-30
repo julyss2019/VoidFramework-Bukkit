@@ -35,12 +35,12 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
                 override fun loadClass(name: String?): Class<*> {
                     return try {
                         libraryClassLoader!!.loadClass(name)
-                    } catch (ex: ClassNotFoundException) {
-                        return try {
+                    } catch (ex: Throwable) {
+                        if (ex is ClassNotFoundException || ex is NoClassDefFoundError) {
                             pluginClassLoader.loadClass(name)
-                        } catch (ex: ClassNotFoundException) {
-                            super.loadClass(name)
                         }
+
+                        throw ex
                     }
                 }
             })
