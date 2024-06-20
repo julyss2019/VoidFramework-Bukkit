@@ -15,20 +15,24 @@ import java.util.List;
  * 打破了双亲委派机制
  */
 public class IsolatedClassLoader extends URLClassLoader {
+    private  ClassLoader parent;
     private final List<String> whitelistClasses;
 
-    public IsolatedClassLoader(ClassLoader parent) {
+    public IsolatedClassLoader( ClassLoader parent) {
         this(parent, new ArrayList<>());
+
     }
 
     public IsolatedClassLoader(ClassLoader parent, List<String> whitelistClasses) {
-        super(new URL[]{}, parent);
+        super(new URL[]{}, null);
 
         this.whitelistClasses = new ArrayList<>(whitelistClasses);
 
         whitelistClasses.add("java");
         whitelistClasses.add("org.bukkit");
         whitelistClasses.add("io.izzel.arclight");
+
+        this.parent = parent;
     }
 
     public List<String> getWhitelistClasses() {
@@ -65,9 +69,16 @@ public class IsolatedClassLoader extends URLClassLoader {
             } catch (ClassNotFoundException ignored) {
             }
 
-            if (loadedClass == null) {
+            if (loadedClass == null && parent != null) {
                 try {
-                    loadedClass = super.loadClass(name);
+                    loadedClass = parent.loadClass(name);
+                } catch (ClassNotFoundException ignored) {
+                }
+            }
+
+            if (loadedClass == null ) {
+                try {
+                    loadedClass = ClassLoader.getSystemClassLoader().loadClass(name);
                 } catch (ClassNotFoundException ignored) {
                 }
             }

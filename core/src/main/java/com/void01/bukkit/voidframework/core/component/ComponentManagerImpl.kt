@@ -5,11 +5,15 @@ import com.void01.bukkit.voidframework.api.common.component.ComponentManager
 import com.void01.bukkit.voidframework.api.common.library.IsolatedClassLoader
 import com.void01.bukkit.voidframework.common.FileUtils
 import com.void01.bukkit.voidframework.core.VoidFrameworkPlugin
+import java.io.File
+import java.nio.file.Files
+import java.util.UUID
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.readBytes
 
 class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentManager {
     private val logger = plugin.pluginLogger
-    private lateinit var componentClassLoader: IsolatedClassLoader
+    private var componentClassLoader: IsolatedClassLoader? = null
 
     init {
         load()
@@ -20,14 +24,24 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
     }
 
     private fun load() {
-        componentClassLoader = IsolatedClassLoader(plugin.javaClass.classLoader)
+        componentClassLoader?.close()
+
+        componentClassLoader = IsolatedClassLoader(javaClass.classLoader)
 
         FileUtils.listFiles(plugin.componentLibsPath, "jar").forEach {
-            componentClassLoader.addURL(it.toFile())
+            val tempFile = Files.createTempFile("test", ".jar").toFile()
+            tempFile.createNewFile()
+            Files.write(tempFile.toPath(), it.readBytes())
+
+            componentClassLoader!!.addURL(tempFile)
             logger.info("已加载组件库: ${it.absolutePathString()}")
         }
         FileUtils.listFiles(plugin.componentsPath, "jar").forEach {
-            componentClassLoader.addURL(it.toFile())
+            val tempFile = Files.createTempFile("test", ".jar").toFile()
+            tempFile.createNewFile()
+            Files.write(tempFile.toPath(), it.readBytes())
+
+            componentClassLoader!!.addURL(tempFile)
             logger.info("已加载组件: ${it.absolutePathString()}")
         }
     }
@@ -38,7 +52,7 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
 
     override fun getComponentOrNull(name: String): Component? {
         return try {
-            componentClassLoader.loadClass(name)?.let {
+            componentClassLoader!!.loadClass(name)?.let {
                 ComponentImpl(it)
             }
         } catch (ex: ClassNotFoundException) {
