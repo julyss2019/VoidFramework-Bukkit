@@ -2,6 +2,8 @@ package com.void01.bukkit.voidframework.api.common.library;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import org.bukkit.plugin.java.JavaPluginLoader;
+import sun.plugin.security.PluginClassLoader;
 
 import java.io.File;
 import java.net.URL;
@@ -20,7 +22,7 @@ public class IsolatedClassLoader extends URLClassLoader {
 
     public IsolatedClassLoader( ClassLoader parent) {
         this(parent, new ArrayList<>());
-
+        defineClass()
     }
 
     public IsolatedClassLoader(ClassLoader parent, List<String> whitelistClasses) {
