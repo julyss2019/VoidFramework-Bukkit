@@ -2,12 +2,10 @@ package com.void01.bukkit.voidframework.api.common.library;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import org.bukkit.plugin.java.JavaPluginLoader;
-import sun.plugin.security.PluginClassLoader;
 
-import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,24 +15,20 @@ import java.util.List;
  * 打破了双亲委派机制
  */
 public class IsolatedClassLoader extends URLClassLoader {
-    private  ClassLoader parent;
     private final List<String> whitelistClasses;
 
-    public IsolatedClassLoader( ClassLoader parent) {
+    public IsolatedClassLoader(ClassLoader parent) {
         this(parent, new ArrayList<>());
-        defineClass()
     }
 
     public IsolatedClassLoader(ClassLoader parent, List<String> whitelistClasses) {
-        super(new URL[]{}, null);
+        super(new URL[]{}, parent);
 
         this.whitelistClasses = new ArrayList<>(whitelistClasses);
 
         whitelistClasses.add("java");
         whitelistClasses.add("org.bukkit");
         whitelistClasses.add("io.izzel.arclight");
-
-        this.parent = parent;
     }
 
     public List<String> getWhitelistClasses() {
@@ -42,8 +36,8 @@ public class IsolatedClassLoader extends URLClassLoader {
     }
 
     @SneakyThrows
-    public void addURL(@NonNull File file) {
-        addURL(file.toURI().toURL());
+    public void addURL(@NonNull Path path) {
+        addURL(path.toUri().toURL());
     }
 
     @Override
@@ -71,16 +65,9 @@ public class IsolatedClassLoader extends URLClassLoader {
             } catch (ClassNotFoundException ignored) {
             }
 
-            if (loadedClass == null && parent != null) {
+            if (loadedClass == null) {
                 try {
-                    loadedClass = parent.loadClass(name);
-                } catch (ClassNotFoundException ignored) {
-                }
-            }
-
-            if (loadedClass == null ) {
-                try {
-                    loadedClass = ClassLoader.getSystemClassLoader().loadClass(name);
+                    loadedClass = super.loadClass(name);
                 } catch (ClassNotFoundException ignored) {
                 }
             }

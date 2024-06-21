@@ -38,7 +38,7 @@ class ScriptManagerImpl(private val plugin: VoidFrameworkPlugin) : ScriptManager
         groovyCompilerConfig.addClassPath(scriptsPath.absolutePathString())
 
         FileUtils.listFiles(scriptLibsPath, "jar").forEach {
-            isolatedClassLoader.addURL(it.toFile())
+            isolatedClassLoader.addURL(it)
             logger.info("已加载脚本库: ${it.absolutePathString()}.")
         }
 
