@@ -2,6 +2,7 @@
 
 package com.void01.bukkit.voidframework.api.internal
 
+import com.void01.bukkit.voidframework.api.common.component.ComponentManager
 import com.void01.bukkit.voidframework.api.common.datasource.DataSourceManager
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSourceManager
 import com.void01.bukkit.voidframework.api.common.groovy.GroovyManager
@@ -18,4 +19,5 @@ interface Context {
     val mongoDbManager: MongoDbManager
     val redissonManager: RedissonManager
     val scriptManager: ScriptManager
+    val componentManager: ComponentManager
 }

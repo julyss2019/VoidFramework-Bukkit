@@ -14,7 +14,6 @@ import com.void01.bukkit.voidframework.api.internal.Context;
 
 public class VoidFramework3 {
     private static Context context;
-    private static ComponentManager componentManager;
 
     public static void setContext(Context context) {
         if (VoidFramework3.context != null) {
@@ -25,11 +24,7 @@ public class VoidFramework3 {
     }
 
     public static ComponentManager getComponentManager() {
-        return componentManager;
-    }
-
-    public static void setComponentManager(ComponentManager componentManager) {
-        VoidFramework3.componentManager = componentManager;
+        return context.getComponentManager();
     }
 
     public static LibraryManager getLibraryManager() {
