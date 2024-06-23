@@ -6,7 +6,6 @@ import com.github.julyss2019.bukkit.voidframework.internal.LegacyVoidFrameworkPl
 import com.void01.bukkit.voidframework.api.common.JavaVoidFramework2
 import com.void01.bukkit.voidframework.api.common.VoidFramework2
 import com.void01.bukkit.voidframework.api.common.VoidFramework3
-import com.void01.bukkit.voidframework.api.common.component.ComponentManager
 import com.void01.bukkit.voidframework.api.common.datasource.DataSourceManager
 import com.void01.bukkit.voidframework.api.common.datasource.shared.SharedDataSourceManager
 import com.void01.bukkit.voidframework.api.common.extension.VoidPlugin
@@ -21,7 +20,6 @@ import com.void01.bukkit.voidframework.api.internal.Context
 import com.void01.bukkit.voidframework.common.FileUtils
 import com.void01.bukkit.voidframework.common.UrlClassLoaderModifier
 import com.void01.bukkit.voidframework.common.kotlin.safeShadow
-import com.void01.bukkit.voidframework.core.component.ComponentManagerImpl
 import com.void01.bukkit.voidframework.core.datasource.DataSourceManagerImpl
 import com.void01.bukkit.voidframework.core.datasource.SharedDataSourceManagerImpl
 import com.void01.bukkit.voidframework.core.groovy.GroovyManagerImpl
@@ -66,8 +64,6 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
     override lateinit var redissonManager: RedissonManager
         private set
     override lateinit var scriptManager: ScriptManager
-        private set
-    override lateinit var componentManager: ComponentManager
         private set
 
     init {
@@ -126,7 +122,6 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
         mongoDbManager = MongoDbManagerImpl(this)
         redissonManager = RedissonManagerImpl(this)
         scriptManager = ScriptManagerImpl(this)
-        componentManager = ComponentManagerImpl(this)
 
         VoidFramework.getCommandManager().createCommandFramework(this).apply {
             registerCommandGroup(MainCommandGroup(this@VoidFrameworkPlugin))
@@ -141,6 +136,5 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
     fun reload() {
         legacy!!.reload()
         (scriptManager as ScriptManagerImpl).reload()
-        (componentManager as ComponentManagerImpl).reload()
     }
 }
