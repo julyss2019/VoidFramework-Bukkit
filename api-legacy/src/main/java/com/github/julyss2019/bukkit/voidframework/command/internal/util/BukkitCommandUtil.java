@@ -11,34 +11,44 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 public class BukkitCommandUtil {
-    private static final CommandMap COMMAND_MAP;
-    private static final Map<String, Command> KNOWN_COMMANDS;
+    private static final  Field commandMapField;
+    private static final Field knownCommandsField;
 
     static {
         try {
-            Field commandMapField = SimplePluginManager.class.getDeclaredField("commandMap");
+            knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
+            commandMapField = SimplePluginManager.class.getDeclaredField("commandMap");
 
             commandMapField.setAccessible(true);
-            COMMAND_MAP = (CommandMap) commandMapField.get(Bukkit.getPluginManager());
-            commandMapField.setAccessible(false);
-
-            Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
-
             knownCommandsField.setAccessible(true);
-            //noinspection unchecked
-            KNOWN_COMMANDS = (Map<String, Command>) knownCommandsField.get(COMMAND_MAP);
-            knownCommandsField.setAccessible(false);
-        } catch (Throwable e) {
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    private static Map<String, Command> getKnownCommands() {
+        try {
+            return (Map<String, Command>) knownCommandsField.get(getCommandMap());
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static CommandMap getCommandMap() {
+        try {
+            return (CommandMap) commandMapField.get(Bukkit.getPluginManager());
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static boolean existsCommand(@NonNull String id) {
-        return COMMAND_MAP.getCommand(id) != null;
+        return getCommandMap().getCommand(id) != null;
     }
 
     public static void unregisterCommand(@NonNull String id) {
-        KNOWN_COMMANDS.remove(id);
+        getKnownCommands().remove(id);
     }
 
     public static void registerCommand(@NonNull String id, @NonNull Command command) {
@@ -46,6 +56,6 @@ public class BukkitCommandUtil {
             throw new IllegalArgumentException(String.format("command '%s' already registered", id));
         }
 
-        COMMAND_MAP.register(id, command);
+        getCommandMap().register(id, command);
     }
 }
