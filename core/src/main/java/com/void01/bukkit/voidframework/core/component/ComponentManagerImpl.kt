@@ -19,7 +19,7 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
     }
 
     fun reload() {
-        componentClassLoader?.close()
+        // componentClassLoader?.close()
         componentClassLoader = null
         System.gc()
         load()
