@@ -7,7 +7,6 @@ plugins {
 
 subprojects {
     version '2.2.0-alpha'
-    version += '-' + 'git rev-parse --short HEAD'.execute().text.trim()
     group 'com.void01.bukkit'
 
     kotlin {
