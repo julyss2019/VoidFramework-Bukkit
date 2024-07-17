@@ -15,13 +15,14 @@ dependencies {
     compileOnly 'com.zaxxer:HikariCP:4.0.3'
     compileOnly 'org.mongodb:mongodb-driver-sync:4.11.1'
     compileOnly 'com.void01.bukkit.thirdparty:Vault:1.7.3-b131'
+    compileOnly 'net.objecthunter:exp4j:0.4.8'
 }
 
 processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     from 'src/main/resources/plugin.yml'
-    filter(ReplaceTokens, beginToken: '${', endToken: '}', tokens: ["version": project.version])
+    filter(ReplaceTokens, beginToken: '${', endToken: '}', tokens: ["version": project.version, "gitHash": 'git rev-parse --short HEAD'.execute().text.trim()])
 }
 
 shadowJar {
@@ -33,6 +34,7 @@ shadowJar {
     relocate('com.mongodb', 'vf.com.mongodb')
     relocate('org.bson', 'vf.org.bson')
     relocate('org.redisson', 'vf.org.redisson')
+    relocate('net.objecthunter.exp4j', 'vf.net.objecthunter.exp4j')
 }
 
 tasks.named('build') {

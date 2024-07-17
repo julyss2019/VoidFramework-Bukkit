@@ -108,6 +108,11 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
             Relocation.createShadowSafely("_com.mongodb_", "_vf.com.mongodb_"),
             Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
         )
+        // exp4j
+        libraryLoader.load(
+            safeShadow("_net.objecthunter.exp4j_"),
+            Relocation.createShadowSafely("_net.objecthunter.exp4j_", "_vf.net.objecthunter.exp4j_")
+        )
     }
 
     override fun onPluginEnable() {
