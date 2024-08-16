@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.void01.bukkit.voidframework.core.mongodb
 
 import com.github.julyss2019.bukkit.voidframework.yaml.DefaultValue
@@ -9,9 +7,10 @@ import com.mongodb.client.MongoClients
 import com.void01.bukkit.voidframework.api.common.mongodb.MongoDbManager
 import com.void01.bukkit.voidframework.core.VoidFrameworkPlugin
 
+@Suppress("OVERRIDE_DEPRECATION")
 class MongoDbManagerImpl(plugin: VoidFrameworkPlugin) : MongoDbManager {
     private val logger = plugin.pluginLogger
-    private var mongoDbClientMap = mutableMapOf<String, MongoClient>()
+    private var mongoClientMap = mutableMapOf<String, MongoClient>()
 
     init {
         val yaml = Yaml.fromPluginConfigFile(plugin)
@@ -23,7 +22,7 @@ class MongoDbManagerImpl(plugin: VoidFrameworkPlugin) : MongoDbManager {
                 try {
                     val clientInst = MongoClients.create(it.getString("url"))
 
-                    mongoDbClientMap[it.name] = clientInst!!
+                    mongoClientMap[it.name] = clientInst!!
                     logger.info("已加载 MongoDB 客户端: ${it.name}")
                 } catch (ex: Exception) {
                     ex.printStackTrace()
@@ -37,41 +36,44 @@ class MongoDbManagerImpl(plugin: VoidFrameworkPlugin) : MongoDbManager {
     }
 
     override fun getClientOrNull(id: String): MongoClient? {
-        return mongoDbClientMap[id]
+        return mongoClientMap[id]
     }
 
-    @Deprecated("返回类型不明确")
     override fun getSharedClient(id: String): Any {
         return getSharedClient2(id)
     }
 
-    @Deprecated("返回类型不明确")
     override fun getSharedClientOrNull(id: String): Any? {
         return getSharedClientOrNull2(id)
     }
 
-    @Deprecated("命名优化")
     override fun getSharedClientOrNull2(id: String): MongoClient? {
-        return mongoDbClientMap[id]
+        return getSharedMongoClientOrNull(id)
     }
 
-    @Deprecated("命名优化")
     override fun getSharedClient2(id: String): MongoClient {
-        return getSharedClientOrNull2(id) ?: throw IllegalArgumentException("Unable to find shared MongoDB client by id: $id")
+        return getSharedMongoClient(id)
     }
 
-    @Deprecated("命名优化")
+    override fun getSharedMongoClientOrNull(id: String): MongoClient? {
+        return mongoClientMap[id]
+    }
+
+    override fun getSharedMongoClient(id: String): MongoClient {
+        return getSharedMongoClientOrNull(id)
+            ?: throw IllegalArgumentException("Unable to find shared mongo client by id: $id")
+    }
+
     override fun getSharedMongoDbClientOrNull(id: String): Any? {
         return getSharedClientOrNull(id)
     }
 
-    @Deprecated("命名优化")
     override fun getSharedMongoDbClient(id: String): Any {
         return getSharedClient(id)
     }
 
     fun closeAll() {
-        mongoDbClientMap.values.forEach {
+        mongoClientMap.values.forEach {
             it.close()
         }
     }
