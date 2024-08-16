@@ -84,29 +84,34 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
 
         // Kotlin
         libraryLoader.load(
-            "org.jetbrains.kotlin:kotlin-stdlib:1.9.20", Relocation.createShadowSafely("_kotlin_", "_kotlin.v1_9_20_")
+            "org.jetbrains.kotlin:kotlin-stdlib:1.9.20", Relocation.createRelocationSafely("_kotlin_", "_kotlin.v1_9_20_")
         )
         libraryLoader.load(
-            "org.jetbrains.kotlin:kotlin-stdlib:1.9.20", Relocation.createShadowSafely("_kotlin_", "_vf.kotlin_")
+            "org.jetbrains.kotlin:kotlin-stdlib:1.9.20", Relocation.createRelocationSafely("_kotlin_", "_vf.kotlin_")
         )
         // HikariCP
         libraryLoader.load(
-            "com.zaxxer:HikariCP:4.0.3", Relocation.createShadowSafely("_com.zaxxer.hikari_", "_vf.com.zaxxer.hikari_")
+            "com.zaxxer:HikariCP:4.0.3", Relocation.createRelocationSafely("_com.zaxxer.hikari_", "_vf.com.zaxxer.hikari_")
         )
         // MongoDB
         libraryLoader.load(
             safeShadow("_org.mongodb:mongodb-driver-sync:4.11.1_"),
-            Relocation.createShadowSafely("_com.mongodb_", "_vf.com.mongodb_"),
-            Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
+            Relocation.createRelocationSafely("_com.mongodb_", "_vf.com.mongodb_"),
+            Relocation.createRelocationSafely("_org.bson_", "_vf.org.bson_"),
         )
         libraryLoader.load(
             safeShadow("_org.mongodb:bson:4.11.1_"),
-            Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
+            Relocation.createRelocationSafely("_org.bson_", "_vf.org.bson_"),
         )
         libraryLoader.load(
             safeShadow("_org.mongodb:mongodb-driver-core:4.11.1_"),
-            Relocation.createShadowSafely("_com.mongodb_", "_vf.com.mongodb_"),
-            Relocation.createShadowSafely("_org.bson_", "_vf.org.bson_"),
+            Relocation.createRelocationSafely("_com.mongodb_", "_vf.com.mongodb_"),
+            Relocation.createRelocationSafely("_org.bson_", "_vf.org.bson_"),
+        )
+        // GSON
+        libraryLoader.load(
+            "com.google.code.gson:gson:2.11.0",
+            Relocation.createRelocationSafely("_com.google.gson_", "_vf.com.google.gson_")
         )
     }
 

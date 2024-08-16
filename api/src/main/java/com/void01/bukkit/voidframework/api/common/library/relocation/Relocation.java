@@ -28,7 +28,12 @@ public class Relocation {
         return Objects.hash(sourcePattern, destPattern);
     }
 
+    @Deprecated
     public static Relocation createShadowSafely(@NonNull String sourcePattern, @NonNull String destPattern) {
+        return createRelocationSafely(sourcePattern, destPattern);
+    }
+
+    public static Relocation createRelocationSafely(@NonNull String sourcePattern, @NonNull String destPattern) {
         if (sourcePattern.length() <= 2) {
             throw new RuntimeException("Illegal before pattern");
         }
