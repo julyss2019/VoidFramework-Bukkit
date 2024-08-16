@@ -1,10 +1,15 @@
 package com.void01.bukkit.voidframework.api.common.logger
 
+import com.google.gson.Gson
 import com.void01.bukkit.voidframework.common.kotlin.toColored
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 
 class PluginLogger(val plugin: Plugin) {
+    companion object {
+        val GSON = Gson()
+    }
+
     @Deprecated("命名优化")
     var level: Level
         get() = threshold
@@ -18,10 +23,31 @@ class PluginLogger(val plugin: Plugin) {
             plugin.logger.info("日志等级: $value")
         }
 
+    fun log(threshold: Level, jsonLog: JsonLog) {
+        log(threshold, GSON.toJson(jsonLog.keyValueMap))
+    }
+
     fun log(threshold: Level, message: String) {
         if (threshold.intLevel >= this.threshold.intLevel) {
-            Bukkit.getConsoleSender().sendMessage("${threshold.color}[${plugin.name}] [${threshold.name}] $message".toColored())
+            Bukkit.getConsoleSender()
+                .sendMessage("${threshold.color}[${plugin.name}] [${threshold.name}] $message".toColored())
         }
+    }
+
+    fun info(jsonLog: JsonLog) {
+        log(Level.INFO, jsonLog)
+    }
+
+    fun debug(jsonLog: JsonLog) {
+        log(Level.DEBUG, jsonLog)
+    }
+
+    fun warn(jsonLog: JsonLog) {
+        log(Level.WARN, jsonLog)
+    }
+
+    fun error(jsonLog: JsonLog) {
+        log(Level.ERROR, jsonLog)
     }
 
     fun info(message: String) {

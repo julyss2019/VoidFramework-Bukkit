@@ -16,6 +16,7 @@ dependencies {
     compileOnly 'org.mongodb:mongodb-driver-sync:4.11.1'
     compileOnly 'com.void01.bukkit.thirdparty:Vault:1.7.3-b131'
     compileOnly 'net.objecthunter:exp4j:0.4.8'
+    compileOnly 'com.google.code.gson:gson:2.11.0'
 }
 
 processResources {
@@ -35,6 +36,7 @@ shadowJar {
     relocate('org.bson', 'vf.org.bson')
     relocate('org.redisson', 'vf.org.redisson')
     relocate('net.objecthunter.exp4j', 'vf.net.objecthunter.exp4j')
+    relocate('org.gson', 'vf.gson')
 }
 
 tasks.named('build') {
