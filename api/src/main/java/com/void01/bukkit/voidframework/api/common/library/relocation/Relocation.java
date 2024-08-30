@@ -33,6 +33,8 @@ public class Relocation {
         return createRelocationSafely(sourcePattern, destPattern);
     }
 
+
+
     public static Relocation createRelocationSafely(@NonNull String sourcePattern, @NonNull String destPattern) {
         if (sourcePattern.length() <= 2) {
             throw new RuntimeException("Illegal before pattern");

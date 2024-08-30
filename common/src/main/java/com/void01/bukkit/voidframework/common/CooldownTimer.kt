@@ -1,6 +1,7 @@
 package com.void01.bukkit.voidframework.common
 
 
+@Deprecated("弃用")
 class CooldownTimer {
     /**
      * 是否已经冷却完毕

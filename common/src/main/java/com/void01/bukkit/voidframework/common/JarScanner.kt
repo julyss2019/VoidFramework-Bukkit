@@ -10,6 +10,7 @@ import java.util.jar.JarFile
 import kotlin.io.path.Path
 
 
+@Deprecated("弃用")
 object JarScanner {
     interface ResultHandler {
         fun handle(path: String, inputStream: InputStream)
