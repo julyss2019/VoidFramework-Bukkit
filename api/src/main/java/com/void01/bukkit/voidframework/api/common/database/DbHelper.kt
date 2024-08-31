@@ -49,7 +49,7 @@ class DbHelper(private val dataSource: DataSource) {
         sql: String,
         params: Params,
         returnGeneratedKeys: Boolean = false,
-        block: (PreparedStatement) -> Unit = {}
+        generatedKeysResultSetBlock: (ResultSet) -> Unit = {}
     ): Int {
         return newConnection().use {
             val prepareStatement =
@@ -61,7 +61,7 @@ class DbHelper(private val dataSource: DataSource) {
             prepareStatement.use {
                 prepareStatement.setParameters(params)
                 prepareStatement.executeUpdate().apply {
-                    block(prepareStatement)
+                    generatedKeysResultSetBlock(prepareStatement.generatedKeys)
                 }
             }
         }

@@ -2,7 +2,6 @@ package com.void01.bukkit.voidframework.common
 
 import java.util.concurrent.TimeUnit
 
-@Deprecated("弃用")
 class StopWatch {
     companion object {
         fun createAndStart(): StopWatch {
