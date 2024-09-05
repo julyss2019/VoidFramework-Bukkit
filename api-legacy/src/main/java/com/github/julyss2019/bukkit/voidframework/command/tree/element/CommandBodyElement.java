@@ -1,14 +1,15 @@
 package com.github.julyss2019.bukkit.voidframework.command.tree.element;
 
+import com.github.julyss2019.bukkit.voidframework.command.CommandGroup;
 import com.github.julyss2019.bukkit.voidframework.command.SenderType;
 import com.github.julyss2019.bukkit.voidframework.command.annotation.CommandBody;
 import com.github.julyss2019.bukkit.voidframework.command.CommandGroupContext;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.ActiveContextParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.command.ArrayCommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.command.SingleCommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.command.OptionalCommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.command.ActiveCommandParam;
 import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.ArrayCommandParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.FixedCommandParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalCommandParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.CommandParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.context.SenderSenderParam;
 import lombok.NonNull;
 import lombok.ToString;
 import org.bukkit.command.CommandSender;
@@ -25,9 +26,9 @@ public class CommandBodyElement extends BaseCommandElement {
     private final String description; // 默认介绍, 即写死在代码里的介绍
     private final Method method;
     private final SenderType[] senderTypes;
-    private final Object commandGroupInst;
-    private final List<SenderParam> senderParams = new ArrayList<>();
-    private final List<CommandParam> commandParams = new ArrayList<>();
+    private final CommandGroup commandGroupInst;
+    private final List<ActiveContextParam> contextParams = new ArrayList<>();
+    private final List<ActiveCommandParam> commandParams = new ArrayList<>();
     private int minInputParamCount;
     private int maxInputParamCount;
 
@@ -64,11 +65,11 @@ public class CommandBodyElement extends BaseCommandElement {
                 } else if (type.isArray()) {
                     commandParams.add(new ArrayCommandParam(type, description, type.getComponentType()));
                 } else {
-                    commandParams.add(new FixedCommandParam(type, description));
+                    commandParams.add(new SingleCommandParam(type, description));
                 }
             } else { // 上下文参数
                 if (CommandSender.class.isAssignableFrom(type)) {
-                    senderParams.add(new SenderSenderParam(parameter.getType()));
+                    contextParams.add(new SenderParam(parameter.getType()));
                 }
             }
         }
@@ -94,8 +95,8 @@ public class CommandBodyElement extends BaseCommandElement {
         } else {
             // String a, String b
             // String a, String b, [String] c
-            for (CommandParam commandParam : commandParams) {
-                if (commandParam instanceof FixedCommandParam) {
+            for (ActiveCommandParam commandParam : commandParams) {
+                if (commandParam instanceof SingleCommandParam) {
                     this.minInputParamCount++;
                 } else {
                     break;
@@ -106,11 +107,11 @@ public class CommandBodyElement extends BaseCommandElement {
         }
     }
 
-    public List<SenderParam> getSenderParams() {
-        return Collections.unmodifiableList(senderParams);
+    public List<ActiveContextParam> getContextParams() {
+        return Collections.unmodifiableList(contextParams);
     }
 
-    public List<CommandParam> getCommandParams() {
+    public List<ActiveCommandParam> getCommandParams() {
         return Collections.unmodifiableList(commandParams);
     }
 

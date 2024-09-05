@@ -20,5 +20,5 @@ public interface CommandElement {
     /**
      * 持有者
      */
-    CommandGroupContext getHolder();
+    CommandGroupContext getActiveCommandGroup();
 }

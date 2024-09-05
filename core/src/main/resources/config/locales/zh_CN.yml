@@ -6,7 +6,7 @@ command:
     missing-permission: |
       &c您无法执行命令: &e${command-line}
       &c因为缺少任意权限: &e[${permissions}].
-    sender-mismatch: '&c您输入的命令 &e${command-line} 仅允许 &e${sender} &c来执行.'
+    sender-mismatch: '&c您输入的命令 &e${command-line} &c仅允许 &e${sender} &c来执行.'
     param-parse-error: '&c您输入的命令 &e${command-line} &c中参数 &e${param} &c存在错误, 原因: &e${error-message}&c.'
     format-error: |
       &c您输入的命令 &e${command-line} &c不存在, 可用的命令如下: 

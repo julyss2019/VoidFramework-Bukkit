@@ -1,4 +1,4 @@
-package com.github.julyss2019.bukkit.voidframework.command.internal.param.user;
+package com.github.julyss2019.bukkit.voidframework.command.internal.param.command;
 
 import lombok.NonNull;
 

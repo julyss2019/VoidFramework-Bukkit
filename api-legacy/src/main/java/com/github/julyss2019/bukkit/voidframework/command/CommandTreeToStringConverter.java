@@ -1,8 +1,8 @@
 package com.github.julyss2019.bukkit.voidframework.command;
 
 
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.OptionalCommandParam;
-import com.github.julyss2019.bukkit.voidframework.command.internal.param.user.CommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.command.OptionalCommandParam;
+import com.github.julyss2019.bukkit.voidframework.command.internal.param.command.ActiveCommandParam;
 import com.github.julyss2019.bukkit.voidframework.command.tree.CommandTree;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandBodyElement;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandElement;
@@ -17,7 +17,7 @@ public class CommandTreeToStringConverter {
 
         String parentIds = commandTree.getParents(false)
                 .stream()
-                .map(commandTree1 -> commandTree1.getElement().getCommandId())
+                .map(commandTree1 -> commandTree1.getCommandElement().getCommandId())
                 .collect(Collectors.joining(" "));
         messages.append(parentIds);
 
@@ -26,7 +26,7 @@ public class CommandTreeToStringConverter {
             messages.append(" ");
         }
 
-        CommandElement element = commandTree.getElement();
+        CommandElement element = commandTree.getCommandElement();
 
         if (element instanceof CommandBodyElement) {
             messages.append(getSubCommandTreeString(commandTree, 0));
@@ -49,7 +49,7 @@ public class CommandTreeToStringConverter {
             messages.append(" ");
         }
 
-        CommandElement component = commandTree.getElement();
+        CommandElement component = commandTree.getCommandElement();
 
         messages.append("&a");
         messages.append(component.getCommandId());
@@ -60,7 +60,7 @@ public class CommandTreeToStringConverter {
 
             messages.append(" ");
 
-            for (CommandParam commandParam : commandBodyElement.getCommandParams()) {
+            for (ActiveCommandParam commandParam : commandBodyElement.getCommandParams()) {
                 messages.append(formatParam(commandParam));
                 messages.append(" ");
             }
@@ -83,7 +83,7 @@ public class CommandTreeToStringConverter {
         return messages.toString();
     }
 
-    private static String formatParam(CommandParam param) {
+    private static String formatParam(ActiveCommandParam param) {
         String description = param.getDescription();
 
         if (param instanceof OptionalCommandParam) {

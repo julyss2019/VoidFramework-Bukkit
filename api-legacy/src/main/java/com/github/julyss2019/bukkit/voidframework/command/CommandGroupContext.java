@@ -1,7 +1,5 @@
 package com.github.julyss2019.bukkit.voidframework.command;
 
-import com.github.julyss2019.bukkit.voidframework.command.CommandFramework;
-import com.github.julyss2019.bukkit.voidframework.command.CommandGroup;
 import lombok.NonNull;
 import org.bukkit.plugin.Plugin;
 

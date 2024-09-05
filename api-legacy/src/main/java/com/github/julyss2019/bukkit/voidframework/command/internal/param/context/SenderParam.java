@@ -1,8 +1,15 @@
 package com.github.julyss2019.bukkit.voidframework.command.internal.param.context;
 
-/**
- * 上下文参数
- * 如：CommandSender
- */
-public interface SenderParam {
+import lombok.NonNull;
+
+public class SenderParam implements ActiveContextParam {
+    private final Class<?> type;
+
+    public SenderParam(@NonNull Class<?> type) {
+        this.type = type;
+    }
+
+    public Class<?> getType() {
+        return type;
+    }
 }

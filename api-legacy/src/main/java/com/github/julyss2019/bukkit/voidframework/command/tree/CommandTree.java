@@ -3,7 +3,6 @@ package com.github.julyss2019.bukkit.voidframework.command.tree;
 import com.github.julyss2019.bukkit.voidframework.annotation.Nullable;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandBodyElement;
 import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandElement;
-import com.github.julyss2019.bukkit.voidframework.command.tree.element.CommandMappingElement;
 import lombok.NonNull;
 
 import java.util.ArrayList;
@@ -38,13 +37,13 @@ public class CommandTree {
         return !children.isEmpty();
     }
 
-    public CommandElement getElement() {
+    public CommandElement getCommandElement() {
         return element;
     }
 
     public CommandTree getOrAddChild(@NonNull CommandTree tree) {
         CommandTree child = children.stream()
-                .filter(commandTree -> commandTree.getElement().getCommandId().equalsIgnoreCase(tree.element.getCommandId()))
+                .filter(commandTree -> commandTree.getCommandElement().getCommandId().equalsIgnoreCase(tree.element.getCommandId()))
                 .findAny()
                 .orElse(null);
 
@@ -56,13 +55,13 @@ public class CommandTree {
     }
 
     public CommandTree addChild(@NonNull CommandTree tree) {
-        if (tree.getElement() == null) {
+        if (tree.getCommandElement() == null) {
             throw new RuntimeException("tree component cannot be null");
         }
 
         for (CommandTree child : children) {
-            if (tree.getElement().getCommandId().equalsIgnoreCase(child.getElement().getCommandId())) {
-                throw new RuntimeException(String.format("same id child already exists: %s", child.getElement().getCommandId()));
+            if (tree.getCommandElement().getCommandId().equalsIgnoreCase(child.getCommandElement().getCommandId())) {
+                throw new RuntimeException(String.format("same id child already exists: %s", child.getCommandElement().getCommandId()));
             }
         }
 
@@ -94,7 +93,7 @@ public class CommandTree {
             stringBuilder
                     .append(element.getCommandId())
                     .append("(")
-                    .append(element.getHolder().getPlugin().getName());
+                    .append(element.getActiveCommandGroup().getPlugin().getName());
 
             if (element instanceof CommandBodyElement) {
                 CommandBodyElement commandBodyElement = (CommandBodyElement) element;

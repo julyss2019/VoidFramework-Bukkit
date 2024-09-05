@@ -114,7 +114,7 @@ public class CommandFramework {
 
     private void unregisterCommandGroup0(CommandGroupContext commandGroupContext) {
         logger.info("CommandGroup unregistered: " + commandGroupContext.getCommandGroup());
-        commandManager.getRootCommandTree().getChildren().removeIf(child -> child.getElement().getHolder().equals(commandGroupContext));
+        commandManager.getRootCommandTree().getChildren().removeIf(child -> child.getCommandElement().getActiveCommandGroup().equals(commandGroupContext));
         commandManager.adjustBukkitCommandIds();
     }
 
@@ -204,7 +204,7 @@ public class CommandFramework {
     /**
      * 获取命令执行失败处理器
      */
-    public CommandFailureHandler getCommandExecutionFailureHandler() {
+    public CommandFailureHandler getFailureHandler() {
         return commandFailureHandler;
     }
 

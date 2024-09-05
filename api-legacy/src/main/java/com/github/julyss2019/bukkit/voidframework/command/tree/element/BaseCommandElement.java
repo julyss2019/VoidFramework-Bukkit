@@ -40,7 +40,7 @@ public abstract class BaseCommandElement implements CommandElement {
     }
 
     @Override
-    public CommandGroupContext getHolder() {
+    public CommandGroupContext getActiveCommandGroup() {
         return holder;
     }
 }

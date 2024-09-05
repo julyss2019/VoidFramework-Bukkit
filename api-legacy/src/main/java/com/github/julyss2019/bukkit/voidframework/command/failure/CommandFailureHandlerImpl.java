@@ -70,7 +70,7 @@ public class CommandFailureHandlerImpl implements CommandFailureHandler {
 
     @Override
     public void onCommandSenderMismatch(CommandSender sender, CommandTree commandTree, String[] commandLineArray) {
-        CommandBodyElement element = (CommandBodyElement) commandTree.getElement();
+        CommandBodyElement element = (CommandBodyElement) commandTree.getCommandElement();
         String senderLocaleStr;
 
         if (element.getSenderTypes()[0] == SenderType.PLAYER) {
