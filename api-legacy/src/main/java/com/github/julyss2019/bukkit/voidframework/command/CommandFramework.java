@@ -71,7 +71,7 @@ public class CommandFramework {
     public ParamParser getParamParser(@NonNull Class<?> type) {
         for (ParamParser paramParser : paramParsers) {
             for (Class<?> supportedParamType : paramParser.getSupportedParamTypes()) {
-                if (supportedParamType.isAssignableFrom(type)) {
+                if (supportedParamType == type) {
                     return paramParser;
                 }
             }
