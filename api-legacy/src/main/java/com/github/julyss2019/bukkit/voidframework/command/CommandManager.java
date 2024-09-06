@@ -254,12 +254,8 @@ public class CommandManager {
                 }
 
                 // 执行方法
-                try {
-                    logger.debug(String.format("Method params: %s", methodParams));
-                    bodyElement.invokeMethod(methodParams.toArray());
-                } catch (Exception e) {
-                    throw new RuntimeException("Method invoke error", e);
-                }
+                logger.debug(String.format("Method params: %s", methodParams));
+                bodyElement.invokeMethod(methodParams.toArray());
             } else {
                 commandFailureHandler.onCommandFormatError(sender, closestCommandTree, cli);
             }
@@ -342,18 +338,18 @@ public class CommandManager {
             List<Object> commandParamValues = new ArrayList<>(); // 命令参数解析出来的对象
 
             // 解析原始参数
-            for (String textParam : commandParamTextParams) {
+            for (String commandParamTextParam : commandParamTextParams) {
                 int finalCommandParamIndex = commandParamIndex;
                 Consumer<String> userParseErrorConsumer = errorMessage -> commandFramework.getFailureHandler().onCommandParamParseError(sender,
                         rootCommandTree,
                         cli,
                         commandTree.getLevel() - finalCommandParamIndex - 1,
-                        Texts.setPlaceholders(errorMessage, new PlaceholderContainer().put("textParam", textParam)));
+                        Texts.setPlaceholders(errorMessage, new PlaceholderContainer().put("commandParamTextParam", commandParamTextParam)));
 
                 // 用户输入了无法解析的参数
                 if (!parseCommandParam(sender,
                         commandFramework,
-                        textParam,
+                        commandParamTextParam,
                         actualCommandParamType,
                         commandParamValues,
                         userParseErrorConsumer)) {
@@ -546,7 +542,7 @@ public class CommandManager {
             public boolean execute(CommandSender sender, String commandLabel, String[] args) {
                 try {
                     dispatchCommand(sender, getFullCommandLineArray(id, args));
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     throw CommandExecutionException.newException(String.format("/%s %s", id, String.join(" ", args)), e);
                 }
 
