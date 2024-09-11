@@ -121,7 +121,8 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
 
     fun getFloatOrNull(path: String): Float? = getFloatOrDefault(path, null)
 
-    fun getFloatOrDefault(path: String, default: Float?): Float? = getDoubleOrDefault(path, default?.toDouble())?.toFloat()
+    fun getFloatOrDefault(path: String, default: Float?): Float? =
+        getDoubleOrDefault(path, default?.toDouble())?.toFloat()
 
     fun getString(path: String): String {
         return getOrThrow(path) {
@@ -134,6 +135,20 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
     fun getStringOrDefault(path: String, default: String?): String? {
         return getOrDefault(path, default) {
             handle.getString(path)
+        }
+    }
+
+    fun getLong(path: String): Long {
+        return getOrThrow(path) {
+            getLongOrNull(path)
+        }
+    }
+
+    fun getLongOrNull(path: String): Long? = getLongOrDefault(path, 0)
+
+    fun getLongOrDefault(path: String, default: Long?): Long? {
+        return getOrDefault(path, default) {
+            handle.getLong(path)
         }
     }
 
@@ -196,25 +211,25 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
     /**
      * 获取，如果为 null 则抛出异常
      * @param path 路径
-     * @param supplier 生产者
+     * @param lazySupplier 生产者
      */
-    private fun <T> getOrThrow(path: String, supplier: Supplier<T?>): T {
-        return supplier.get() ?: throw IllegalArgumentException("Unable to get value by path: '$currentPath.$path'")
+    private fun <T> getOrThrow(path: String, lazySupplier: Supplier<T?>): T {
+        return lazySupplier.get() ?: throw IllegalArgumentException("Unable to get value by path: '$currentPath.$path'")
     }
 
     /**
      * 获取，如果为 null 则返回默认值
      * @param path 路径
      * @param default 默认值
-     * @param supplier 生产者
+     * @param lazySupplier 生产者
      */
-    private fun <T> getOrDefault(path: String, default: T?, supplier: Supplier<T?>): T? {
+    private fun <T> getOrDefault(path: String, default: T?, lazySupplier: Supplier<T?>): T? {
         if (!handle.contains(path)) {
             return default
         }
 
         try {
-            return supplier.get() ?: default
+            return lazySupplier.get() ?: default
         } catch (ex: Exception) {
             throw RuntimeException("An exception occurred while parsing: '$currentPath.$path'", ex)
         }
