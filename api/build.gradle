@@ -12,11 +12,5 @@ publishing {
             from components.java
             artifactId = 'void-framework-bukkit-api'
         }
-
-        mavenLatest(MavenPublication) {
-            from components.java
-            version = 'latest'
-            artifactId = 'void-framework-bukkit-api'
-        }
     }
 }

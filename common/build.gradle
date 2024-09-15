@@ -8,12 +8,6 @@ publishing {
             artifactId = 'void-framework-bukkit-common'
             from components.java
         }
-
-        mavenLatest(MavenPublication) {
-            version = 'latest'
-            artifactId = 'void-framework-bukkit-common'
-            from components.java
-        }
     }
 }
 
