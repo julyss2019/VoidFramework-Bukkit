@@ -93,7 +93,7 @@ public class Inventories {
         Validator.checkState(amount > 0, "amount must > 0");
         Validator.checkNotContainsNullElement(slots, "slots cannot contains null");
 
-        int effectedAmount = 0;
+        int took = 0;
 
         for (int slot : slots) {
             ItemStack item = inventory.getItem(slot);
@@ -105,24 +105,21 @@ public class Inventories {
             if (predicate.test(item)) {
                 int itemAmount = item.getAmount();
 
-                if (effectedAmount + itemAmount > amount) {
+                if (took + itemAmount > amount) {
                     ItemStack newAmountItem = item.clone();
 
-                    newAmountItem.setAmount(itemAmount - (amount - effectedAmount));
+                    newAmountItem.setAmount(itemAmount - (amount - took));
                     inventory.setItem(slot, newAmountItem);
-                    effectedAmount = amount;
+                    took = amount;
+                    return took;
                 } else {
                     inventory.setItem(slot, null);
-                    effectedAmount += itemAmount;
+                    took += itemAmount;
                 }
-            }
-
-            if (effectedAmount == amount) {
-                return effectedAmount;
             }
         }
 
-        return effectedAmount;
+        return took;
     }
 
     /**
@@ -189,7 +186,7 @@ public class Inventories {
             }
 
             if (finishedAmount == amount) {
-                return amount;
+                break;
             }
         }
 
@@ -197,19 +194,19 @@ public class Inventories {
     }
 
     /**
-     * 判断背包是否能放下物品(数量为提供的 item 的数量)
+     * 判断背包是否能完全放下物品(数量为提供的 item 的数量)
      *
      * @param inventory 背包
      * @param slots     槽位 id
      * @param item      物品
      * @return 是否能放下
      */
-    public static boolean canPutItems(@NonNull Inventory inventory, @NonNull List<Integer> slots, @NonNull ItemStack item) {
-        return canPutItems(inventory, slots, item, item.getAmount());
+    public static boolean canPutItemsCompletely(@NonNull Inventory inventory, @NonNull List<Integer> slots, @NonNull ItemStack item) {
+        return canPutItemsCompletely(inventory, slots, item, item.getAmount());
     }
 
     /**
-     * 判断背包是否能放下物品
+     * 判断背包是否能完全放下物品
      *
      * @param inventory 背包
      * @param slots     槽位 id
@@ -217,7 +214,7 @@ public class Inventories {
      * @param amount    数量
      * @return 是否能放下
      */
-    public static boolean canPutItems(@NonNull Inventory inventory, @NonNull List<Integer> slots, @NonNull ItemStack item, int amount) {
+    public static boolean canPutItemsCompletely(@NonNull Inventory inventory, @NonNull List<Integer> slots, @NonNull ItemStack item, int amount) {
         int itemMaxStack = item.getMaxStackSize();
         int availableAmount = 0;
 
@@ -235,7 +232,16 @@ public class Inventories {
             }
         }
 
-        return availableAmount >= amount;
+        return false;
+    }
+
+
+    public static int getItemAmount(@NonNull Inventory inventory, @NonNull List<Integer> slots, @NonNull Predicate<ItemStack> predicate) {
+        return calculateItemCount(inventory, slots, predicate);
+    }
+
+    public static int getItemAmount(@NonNull Inventory inventory, @NonNull List<Integer> slots, @NonNull ItemStack itemStack) {
+        return calculateItemCount(inventory, slots, itemStack);
     }
 
     /**
@@ -246,6 +252,7 @@ public class Inventories {
      * @param itemStack 物品
      * @return 总数
      */
+    @Deprecated
     public static int calculateItemCount(@NonNull Inventory inventory, @NonNull List<Integer> slots, @NonNull ItemStack itemStack) {
         return calculateItemCount(inventory, slots, new ItemSimilarPredicate(itemStack));
     }
@@ -258,6 +265,7 @@ public class Inventories {
      * @param predicate 依据
      * @return 总数
      */
+    @Deprecated
     public static int calculateItemCount(@NonNull Inventory inventory, @NonNull List<Integer> slots, @NonNull Predicate<ItemStack> predicate) {
         Validator.checkNotContainsNullElement(slots, "slots cannot contains null");
 
