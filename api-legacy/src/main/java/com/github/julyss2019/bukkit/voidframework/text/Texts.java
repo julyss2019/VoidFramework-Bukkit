@@ -6,9 +6,13 @@ import lombok.NonNull;
 import org.bukkit.ChatColor;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Texts {
+    private static final Pattern rgbPattern = Pattern.compile("[&§]#[0-9A-Fa-f]{6}");
+
     /**
      * 对文本进行着色操作
      * 以 & 作为着色符
@@ -26,7 +30,25 @@ public class Texts {
      * @param altChar 着色符
      */
     public static String getColoredText(@NonNull String text, @NonNull Character altChar) {
-        return ChatColor.translateAlternateColorCodes(altChar, text);
+        return resolveRgbExpression(ChatColor.translateAlternateColorCodes(altChar, text));
+    }
+
+    private static String resolveRgbExpression(String text) {
+        Matcher matcher = rgbPattern.matcher(text);
+        String processedText = text;
+
+        while (matcher.find()) {
+            String rgbColorExpr = text.substring(matcher.start(), matcher.end());
+            StringBuilder processedRgbColorExpr = new StringBuilder(ChatColor.COLOR_CHAR + "x");
+
+            for (char c : rgbColorExpr.substring(1).toCharArray()) {
+                processedRgbColorExpr.append(ChatColor.COLOR_CHAR).append(c);
+            }
+
+            processedText = processedText.replace(rgbColorExpr, processedRgbColorExpr.toString());
+        }
+
+        return processedText;
     }
 
     /**
