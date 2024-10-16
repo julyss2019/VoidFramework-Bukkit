@@ -38,16 +38,32 @@ class PluginLogger(val plugin: Plugin) {
         log(Level.INFO, jsonLog)
     }
 
+    fun info(message: String, jsonLog: JsonLog) {
+        info(jsonLog.put("message", message))
+    }
+
     fun debug(jsonLog: JsonLog) {
         log(Level.DEBUG, jsonLog)
+    }
+
+    fun debug(message: String, jsonLog: JsonLog) {
+        debug(jsonLog.put("message", message))
     }
 
     fun warn(jsonLog: JsonLog) {
         log(Level.WARN, jsonLog)
     }
 
+    fun warn(message: String, jsonLog: JsonLog) {
+        warn(jsonLog.put("message", message))
+    }
+
     fun error(jsonLog: JsonLog) {
         log(Level.ERROR, jsonLog)
+    }
+
+    fun error(message: String, jsonLog: JsonLog) {
+        error(jsonLog.put("message", message))
     }
 
     fun info(message: String) {
