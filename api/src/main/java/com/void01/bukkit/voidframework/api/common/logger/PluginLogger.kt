@@ -1,13 +1,17 @@
 package com.void01.bukkit.voidframework.api.common.logger
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.void01.bukkit.voidframework.api.common.logger.gson.ItemStackTypeAdapter
 import com.void01.bukkit.voidframework.common.kotlin.toColored
 import org.bukkit.Bukkit
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
 class PluginLogger(val plugin: Plugin) {
     companion object {
-        val GSON = Gson()
+        val GSON = GsonBuilder()
+            .registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackTypeAdapter())
+            .create()
     }
 
     @Deprecated("命名优化")
