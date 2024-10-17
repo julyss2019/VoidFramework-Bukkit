@@ -23,6 +23,67 @@ class PluginLogger(val plugin: Plugin) {
             plugin.logger.info("日志等级: $value")
         }
 
+    fun debug(jsonLog: JsonLog) {
+        log(Level.DEBUG, jsonLog)
+    }
+
+    fun debug(message: String, jsonLog: JsonLog) {
+        debug(mergeMessageJsonLog(message, jsonLog))
+    }
+
+    fun info(jsonLog: JsonLog) {
+        log(Level.INFO, jsonLog)
+    }
+
+    fun info(message: String, jsonLog: JsonLog) {
+        info(mergeMessageJsonLog(message, jsonLog))
+    }
+
+    fun warn(jsonLog: JsonLog) {
+        log(Level.WARN, jsonLog)
+    }
+
+    fun warn(message: String, jsonLog: JsonLog) {
+        warn(mergeMessageJsonLog(message, jsonLog))
+    }
+
+    fun error(jsonLog: JsonLog) {
+        log(Level.ERROR, jsonLog)
+    }
+
+    fun error(message: String, jsonLog: JsonLog) {
+        error(mergeMessageJsonLog(message, jsonLog))
+    }
+
+    /**
+     * 合并消息到 JsonLog
+     */
+    private fun mergeMessageJsonLog(message: String, jsonLog: JsonLog): JsonLog {
+        val newJsonLog = JsonLog().put("message", message)
+
+        return newJsonLog.apply {
+            jsonLog.keyValueMap.forEach {
+                put(it.key, it.value)
+            }
+        }
+    }
+
+    fun debug(message: String) {
+        log(Level.DEBUG, message)
+    }
+
+    fun info(message: String) {
+        log(Level.INFO, message)
+    }
+
+    fun warn(message: String) {
+        log(Level.WARN, message)
+    }
+
+    fun error(message: String) {
+        log(Level.ERROR, message)
+    }
+
     fun log(threshold: Level, jsonLog: JsonLog) {
         log(threshold, GSON.toJson(jsonLog.keyValueMap))
     }
@@ -32,53 +93,5 @@ class PluginLogger(val plugin: Plugin) {
             Bukkit.getConsoleSender()
                 .sendMessage("${threshold.color}[${plugin.name}] [${threshold.name}] $message".toColored())
         }
-    }
-
-    fun info(jsonLog: JsonLog) {
-        log(Level.INFO, jsonLog)
-    }
-
-    fun info(message: String, jsonLog: JsonLog) {
-        info(jsonLog.put("message", message))
-    }
-
-    fun debug(jsonLog: JsonLog) {
-        log(Level.DEBUG, jsonLog)
-    }
-
-    fun debug(message: String, jsonLog: JsonLog) {
-        debug(jsonLog.put("message", message))
-    }
-
-    fun warn(jsonLog: JsonLog) {
-        log(Level.WARN, jsonLog)
-    }
-
-    fun warn(message: String, jsonLog: JsonLog) {
-        warn(jsonLog.put("message", message))
-    }
-
-    fun error(jsonLog: JsonLog) {
-        log(Level.ERROR, jsonLog)
-    }
-
-    fun error(message: String, jsonLog: JsonLog) {
-        error(jsonLog.put("message", message))
-    }
-
-    fun info(message: String) {
-        log(Level.INFO, message)
-    }
-
-    fun debug(message: String) {
-        log(Level.DEBUG, message)
-    }
-
-    fun warn(message: String) {
-        log(Level.WARN, message)
-    }
-
-    fun error(message: String) {
-        log(Level.ERROR, message)
     }
 }
