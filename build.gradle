@@ -6,7 +6,7 @@ plugins {
 }
 
 subprojects {
-    version '2.2.2-alpha'
+    version '2.2.2'
     group 'com.void01.bukkit'
 
     kotlin {
