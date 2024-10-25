@@ -1,7 +1,6 @@
 dependencies {
-    compileOnly project(':api-legacy')
-    compileOnly project(':common')
-
+    implementation project(':api-legacy')
+    implementation project(':common')
     compileOnly 'org.mongodb:mongodb-driver-sync:4.11.1'
     compileOnly 'org.redisson:redisson:3.27.2'
 }

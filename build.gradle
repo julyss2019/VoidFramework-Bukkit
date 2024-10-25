@@ -6,7 +6,7 @@ plugins {
 }
 
 subprojects {
-    version '2.2.3-alpha'
+    version '2.4.0-SNAPSHOT'
     group 'com.void01.bukkit'
 
     kotlin {
@@ -42,9 +42,12 @@ subprojects {
 
     publishing {
         repositories {
-            mavenLocal()
             maven {
-                url = 'https://maven.void01.com/repository/bukkit-plugin/'
+                if (version.toString().endsWith("-SNAPSHOT")) {
+                    url = 'https://maven.void01.com/repository/bukkit-plug-api-snapshot/'
+                } else {
+                    url = 'https://maven.void01.com/repository/bukkit-plug-api-release/'
+                }
 
                 credentials {
                     username = project.findProperty('nexus.username')

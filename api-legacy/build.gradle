@@ -1,8 +1,0 @@
-publishing {
-    publications {
-        mavenCurrent(MavenPublication) {
-            artifactId = 'void-framework-bukkit-api-legacy'
-            from components.java
-        }
-    }
-}

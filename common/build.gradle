@@ -1,13 +1,5 @@
 dependencies {
     compileOnly project(':api-legacy')
+    compileOnly("org.ow2.asm:asm:9.7.1")
+    compileOnly("org.ow2.asm:asm-tree:9.7.1")
 }
-
-publishing {
-    publications {
-        mavenCurrent(MavenPublication) {
-            artifactId = 'void-framework-bukkit-common'
-            from components.java
-        }
-    }
-}
-
