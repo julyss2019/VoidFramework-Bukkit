@@ -8,8 +8,12 @@ dependencies {
 publishing {
     publications {
         mavenCurrent(MavenPublication) {
-            from components.java
+            from(components["java"])
             artifactId = 'void-framework-bukkit-api'
         }
     }
+}
+
+shadowJar {
+    classifier = ''
 }
