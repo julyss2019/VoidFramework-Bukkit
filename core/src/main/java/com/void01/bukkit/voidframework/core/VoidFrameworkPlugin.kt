@@ -84,14 +84,16 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
 
         // Kotlin
         libraryLoader.load(
-            "org.jetbrains.kotlin:kotlin-stdlib:1.9.20", Relocation.createRelocationSafely("_kotlin_", "_kotlin.v1_9_20_")
+            "org.jetbrains.kotlin:kotlin-stdlib:1.9.20",
+            Relocation.createRelocationSafely("_kotlin_", "_kotlin.v1_9_20_")
         )
         libraryLoader.load(
             "org.jetbrains.kotlin:kotlin-stdlib:1.9.20", Relocation.createRelocationSafely("_kotlin_", "_vf.kotlin_")
         )
         // HikariCP
         libraryLoader.load(
-            "com.zaxxer:HikariCP:4.0.3", Relocation.createRelocationSafely("_com.zaxxer.hikari_", "_vf.com.zaxxer.hikari_")
+            "com.zaxxer:HikariCP:4.0.3",
+            Relocation.createRelocationSafely("_com.zaxxer.hikari_", "_vf.com.zaxxer.hikari_")
         )
         // MongoDB
         libraryLoader.load(
