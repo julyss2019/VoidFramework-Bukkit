@@ -37,6 +37,7 @@ shadowJar {
     relocate('org.redisson', 'vf.org.redisson')
     relocate('net.objecthunter.exp4j', 'vf.net.objecthunter.exp4j')
     relocate('org.gson', 'vf.gson')
+    relocate('org.ow2.asm', 'vf.org.ow2.asm')
 }
 
 tasks.named('build') {

@@ -115,6 +115,14 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
             "com.google.code.gson:gson:2.11.0",
             Relocation.createRelocationSafely("_com.google.gson_", "_vf.com.google.gson_")
         )
+        libraryLoader.load(
+            safeShadow("_org.ow2.asm:asm:9.7.1_"),
+            Relocation.createRelocationSafely("_org.ow2.asm_", "_vf.org.ow2.asm_")
+        )
+        libraryLoader.load(
+            safeShadow("_org.ow2.asm:asm-tree:9.7.1_"),
+            Relocation.createRelocationSafely("_org.ow2.asm_", "_vf.org.ow2.asm_")
+        )
     }
 
     override fun onPluginEnable() {
