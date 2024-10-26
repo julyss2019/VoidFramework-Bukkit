@@ -44,9 +44,9 @@ subprojects {
         repositories {
             maven {
                 if (version.toString().endsWith("-SNAPSHOT")) {
-                    url = 'https://maven.void01.com/repository/bukkit-plug-api-snapshot/'
+                    url = 'https://maven.void01.com/repository/minecraft-snapshots/'
                 } else {
-                    url = 'https://maven.void01.com/repository/bukkit-plug-api-release/'
+                    url = 'https://maven.void01.com/repository/minecraft-releases/'
                 }
 
                 credentials {
