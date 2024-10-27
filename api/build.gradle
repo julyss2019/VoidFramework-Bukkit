@@ -7,9 +7,9 @@ dependencies {
 
 publishing {
     publications {
-        mavenCurrent(MavenPublication) {
-            from(components["java"])
+        shadow(MavenPublication) { publication ->
             artifactId = 'void-framework-bukkit-api'
+            project.shadow.component(publication)
         }
     }
 }
