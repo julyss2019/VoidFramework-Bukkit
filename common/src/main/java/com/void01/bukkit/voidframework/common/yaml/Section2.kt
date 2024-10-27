@@ -67,6 +67,10 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
         return from(handle.getConfigurationSection(path) ?: return def)
     }
 
+    fun getIntList(path: String) : List<Int> {
+        return handle.getIntegerList(path) ?: emptyList()
+    }
+
     fun getStringList(path: String): List<String> {
         return handle.getStringList(path) ?: emptyList()
     }
