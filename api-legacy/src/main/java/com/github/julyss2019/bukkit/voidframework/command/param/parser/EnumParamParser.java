@@ -5,7 +5,12 @@ import org.bukkit.command.CommandSender;
 
 public class EnumParamParser extends BaseParamParser {
     public EnumParamParser() {
-        super(new Class[]{Enum.class});
+        super(new Class[]{});
+    }
+
+    @Override
+    public boolean isSupportedParamType(Class<?> type) {
+        return Enum.class.isAssignableFrom(type);
     }
 
     @Override

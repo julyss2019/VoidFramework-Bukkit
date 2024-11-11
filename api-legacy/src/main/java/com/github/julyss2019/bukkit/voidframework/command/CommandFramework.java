@@ -70,10 +70,16 @@ public class CommandFramework {
 
     public ParamParser getParamParser(@NonNull Class<?> type) {
         for (ParamParser paramParser : paramParsers) {
+            // 旧版兼容
             for (Class<?> supportedParamType : paramParser.getSupportedParamTypes()) {
-                if (supportedParamType.isAssignableFrom(type)) {
+                if (supportedParamType == type) {
                     return paramParser;
                 }
+            }
+
+            // 新版
+            if (paramParser.isSupportedParamType(type)) {
+                return paramParser;
             }
         }
 
