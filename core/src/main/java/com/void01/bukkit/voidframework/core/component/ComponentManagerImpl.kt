@@ -25,15 +25,15 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
     }
 
     private fun load() {
-        componentClassLoader = IsolatedClassLoader(javaClass.classLoader)
+        val isolatedClassLoader = IsolatedClassLoader(javaClass.classLoader)
+        val componentLibFiles = FileUtils.listFiles(plugin.componentLibsPath, "jar")
+        val componentFiles = FileUtils.listFiles(plugin.componentsPath, "jar")
 
-        FileUtils.listFiles(plugin.componentLibsPath, "jar").forEach {
-            componentClassLoader!!.addURL(copyTempFile(it))
-            logger.info("已加载组件库: ${it.absolutePathString()}")
+        componentLibFiles.forEach {
+            isolatedClassLoader.addURL(copyTempFile(it))
         }
-        FileUtils.listFiles(plugin.componentsPath, "jar").forEach {
-            componentClassLoader!!.addURL(copyTempFile(it))
-            logger.info("已加载组件: ${it.absolutePathString()}")
+        componentFiles.forEach {
+            isolatedClassLoader.addURL(copyTempFile(it))
         }
         componentClassLoader = isolatedClassLoader
         logger.info("${componentLibFiles.size} component lib(s) loaded")
