@@ -7,7 +7,6 @@ import com.void01.bukkit.voidframework.common.FileUtils
 import com.void01.bukkit.voidframework.core.VoidFrameworkPlugin
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.io.path.absolutePathString
 import kotlin.io.path.readBytes
 
 class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentManager {
@@ -36,6 +35,9 @@ class ComponentManagerImpl(private val plugin: VoidFrameworkPlugin) : ComponentM
             componentClassLoader!!.addURL(copyTempFile(it))
             logger.info("已加载组件: ${it.absolutePathString()}")
         }
+        componentClassLoader = isolatedClassLoader
+        logger.info("${componentLibFiles.size} component lib(s) loaded")
+        logger.info("${componentFiles.size} component(s) loaded")
     }
 
     private fun copyTempFile(path: Path): Path {

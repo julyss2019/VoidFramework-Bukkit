@@ -127,11 +127,12 @@ class VoidFrameworkPlugin : VoidPlugin(), Context {
 
     override fun onPluginEnable() {
         // 本地库
-        FileUtils.listFiles(dataFolder.toPath().resolve("local-libs"), "jar").forEach {
-            UrlClassLoaderModifier.addUrl(classLoader, it.toFile())
-            pluginLogger.info("已加载本地库: ${it.absolutePathString()}")
-        }
+        val localLibs = FileUtils.listFiles(dataFolder.toPath().resolve("local-libs"), "jar")
 
+        localLibs.forEach {
+            UrlClassLoaderModifier.addUrl(classLoader, it.toFile())
+        }
+        pluginLogger.info("${localLibs.size} local lib(s) loaded")
         legacy = LegacyVoidFrameworkPlugin(this)
         legacy!!.onEnable()
 
