@@ -8,20 +8,14 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 
 class PluginLogger(val plugin: Plugin) {
-    companion object {
-        val GSON = GsonBuilder()
-            .registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackTypeAdapter())
-            .create()
-    }
-
     @Deprecated("命名优化")
-    var level: Level
-        get() = threshold
+    var threshold: Level
+        get() = level
         set(value) {
-            threshold = value
+            level = value
         }
 
-    var threshold: Level = Level.INFO
+    var level: Level = Level.INFO
         set(value) {
             field = value
             plugin.logger.info("日志等级: $value")
@@ -71,6 +65,8 @@ class PluginLogger(val plugin: Plugin) {
             }
         }
     }
+            plugin.logger.info("Logger level: $value")
+        }
 
     fun debug(message: String) {
         log(Level.DEBUG, message)
@@ -93,7 +89,7 @@ class PluginLogger(val plugin: Plugin) {
     }
 
     fun log(threshold: Level, message: String) {
-        if (threshold.intLevel >= this.threshold.intLevel) {
+        if (threshold.intLevel >= this.level.intLevel) {
             Bukkit.getConsoleSender()
                 .sendMessage("${threshold.color}[${plugin.name}] [${threshold.name}] $message".toColored())
         }
