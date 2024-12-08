@@ -4,6 +4,21 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 object ItemUtils {
+    val AIR_ITEM get() = ItemStack(Material.AIR)
+
+    fun subtractItem(item: ItemStack): ItemStack {
+        val newAmount = item.amount - 1
+
+        if (newAmount <= 0) {
+            return AIR_ITEM
+        } else {
+            val newItem = item.clone()
+
+            newItem.amount = newAmount
+            return newItem
+        }
+    }
+
     fun setLores(itemStack: ItemStack, lores: List<String>): ItemStack {
         require(isValid(itemStack)) { "Invalid ItemStack" }
 
