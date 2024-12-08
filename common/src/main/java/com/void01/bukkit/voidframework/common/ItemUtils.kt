@@ -4,6 +4,17 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 object ItemUtils {
+    fun setLores(itemStack: ItemStack, lores: List<String>): ItemStack {
+        require(isValid(itemStack)) { "Invalid ItemStack" }
+
+        val clone = itemStack.clone()
+        val cloneMeta = clone.itemMeta
+
+        cloneMeta.lore = lores
+        clone.itemMeta = cloneMeta
+        return clone
+    }
+
     fun containsLore(item: ItemStack?, lore: String): Boolean {
         if (!isValid(item)) {
             return false
