@@ -55,7 +55,8 @@ object BukkitEventUtils {
                     val value = annotationKeyValues[i + 1]
 
                     if (key == "priority") {
-                        priority = value as EventPriority
+                        @Suppress("UNCHECKED_CAST")
+                        priority = EventPriority.valueOf((value as Array<String>)[1])
                     } else if (key == "ignoreCancelled") {
                         isIgnoreCancelled = value as Boolean
                     }
