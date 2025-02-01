@@ -148,7 +148,7 @@ open class Section2 protected constructor(val handle: ConfigurationSection) {
         }
     }
 
-    fun getLongOrNull(path: String): Long? = getLongOrDefault(path, 0)
+    fun getLongOrNull(path: String): Long? = getLongOrDefault(path, null)
 
     fun getLongOrDefault(path: String, default: Long?): Long? {
         return getOrDefault(path, default) {
