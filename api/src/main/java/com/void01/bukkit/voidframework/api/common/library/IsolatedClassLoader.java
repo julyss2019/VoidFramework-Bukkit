@@ -26,9 +26,9 @@ public class IsolatedClassLoader extends URLClassLoader {
 
         this.whitelistClasses = new ArrayList<>(whitelistClasses);
 
-        whitelistClasses.add("java");
-        whitelistClasses.add("org.bukkit");
-        whitelistClasses.add("io.izzel.arclight");
+        this.whitelistClasses.add("java");
+        this.whitelistClasses.add("org.bukkit");
+        this.whitelistClasses.add("io.izzel.arclight");
     }
 
     public List<String> getWhitelistClasses() {
