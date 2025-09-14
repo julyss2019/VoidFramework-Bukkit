@@ -43,6 +43,9 @@ subprojects {
         maven {
             url 'https://maven.void01.com/repository/bukkit-plugin/'
         }
+        maven {
+            url 'https://maven.void01.com/repository/minecraft-releases/'
+        }
     }
 
     publishing {
